@@ -1,0 +1,1593 @@
+/* Design tokens (Ink / Figma Global Nav in Cooking) */
+:root {
+  --content-primary: #121212;
+  --content-secondary: #5a5a5a;
+  --content-placeholder: #8b8b8b;
+  --content-inverse: #ffffff;
+  --background-primary: #ffffff;
+  --background-secondary: #f8f8f8;
+  --background-tertiary: #ebebeb;
+  /* Figma 410:24776 — colors.surface / Signal/Accent */
+  --canvas-dark: #1f1f1f;
+  --surface-base: #f8f8f8;
+  --surface-raised: #ffffff;
+  --surface-muted: #ebebeb;
+  --colors-primary: #2b61aa;
+  --colors-primary-hover: #244f8c;
+  --signal-accent: #2b61aa;
+  --signal-accent-hover: #244f8c;
+  /* Prominent tree + list selection (utility focus blue) */
+  --signal-selected: #458fff;
+  --stroke-primary: #c7c7c7;
+  --stroke-secondary: #dfdfdf;
+  --stroke-subtle: #dfdfdf;
+  --stroke-default: #c7c7c7;
+  --stroke-strong: #8b8b8b;
+  --utility-focus: #458fff;
+  --shadow-pop: 0 4px 16px rgba(18, 18, 18, 0.14);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --font-sans: "Libre Franklin", system-ui, -apple-system, sans-serif;
+  --sidebar-width: 70px;
+  /* Figma alt_b — Right Rail-Desktop */
+  --right-rail-width: 384px;
+  /* Figma Frame 628553 — tree column */
+  --workspace-tree-column-b: 558px;
+  /* Figma alt_a — equal split 605 + 605 (+ sidebar 70 = 1280) */
+  --workspace-tree-column-a: 605px;
+  --right-rail-width-a: 605px;
+  --topbar-height: 48px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--content-primary);
+  background: var(--background-secondary);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar {
+  flex: 0 0 var(--sidebar-width);
+  width: var(--sidebar-width);
+  background: var(--canvas-dark);
+  color: var(--content-inverse);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg) var(--space-sm) var(--space-lg);
+  min-height: 0;
+  align-self: stretch;
+  gap: var(--space-lg);
+}
+
+.sidebar__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar__logo-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.sidebar__logo-mark {
+  line-height: 0;
+}
+
+.sidebar__env {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+}
+
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 0 var(--space-xs);
+  min-height: 0;
+}
+
+.sidebar__item {
+  width: 100%;
+  max-width: 56px;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.72);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.sidebar__item:hover {
+  color: var(--content-inverse);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar__item--active {
+  color: var(--content-inverse);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: auto;
+  padding-top: 0;
+}
+
+.sidebar__help {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--content-inverse);
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
+.sidebar__help:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar__profile {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #3d5a73;
+  color: var(--content-inverse);
+  font-size: 11px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+}
+
+.app__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--background-secondary);
+}
+
+.topbar {
+  flex: 0 0 var(--topbar-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--stroke-secondary);
+  box-sizing: border-box;
+}
+
+.topbar__center {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.layout-variant-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.layout-variant-switch__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--content-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.layout-variant-switch__buttons {
+  display: inline-flex;
+  border: 1px solid var(--stroke-primary);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--background-secondary);
+}
+
+.layout-variant-switch__btn {
+  margin: 0;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--content-secondary);
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--stroke-secondary);
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.layout-variant-switch__btn:last-child {
+  border-right: none;
+}
+
+.layout-variant-switch__btn:hover {
+  color: var(--content-primary);
+  background: var(--surface-muted);
+}
+
+.layout-variant-switch__btn.is-active {
+  color: var(--content-inverse);
+  background: var(--colors-primary);
+}
+
+.layout-variant-switch__btn.is-active:hover {
+  background: var(--colors-primary-hover);
+  color: var(--content-inverse);
+}
+
+.layout-variant-switch__btn:focus-visible {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.layout-variant-switch--compact .layout-variant-switch__btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  min-width: 28px;
+}
+
+.layout-variant-switch--compact {
+  margin-right: var(--space-sm);
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-shrink: 0;
+}
+
+.btn--preview-chip {
+  border: none;
+  background: var(--background-tertiary);
+  color: var(--content-primary);
+  border-radius: var(--radius-sm);
+  padding: 6px var(--space-sm);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 12px;
+}
+
+.btn--preview-chip:hover {
+  background: var(--stroke-secondary);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  color: var(--content-primary);
+}
+
+.breadcrumb__text {
+  color: var(--content-primary);
+}
+
+.breadcrumb__text--current {
+  color: var(--content-primary);
+  font-weight: 600;
+}
+
+.breadcrumb__sep {
+  display: flex;
+  align-items: center;
+  color: var(--content-primary);
+}
+
+.breadcrumb__link {
+  color: var(--content-secondary);
+}
+
+.breadcrumb__link:hover {
+  color: var(--colors-primary);
+}
+
+.topbar__saved {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  color: var(--content-secondary);
+  min-width: 4.5rem;
+  text-align: right;
+}
+
+.topbar__saved--dirty {
+  color: var(--content-primary);
+  font-weight: 600;
+}
+
+.btn--preview {
+  border: 1px solid var(--stroke-primary);
+  background: var(--background-primary);
+  color: var(--content-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn--preview:hover {
+  border-color: var(--utility-focus);
+  color: var(--colors-primary);
+}
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+}
+
+.btn--ghost {
+  border-color: var(--stroke-default);
+  background: var(--surface-raised);
+  color: var(--content-primary);
+}
+
+.btn--ghost:hover {
+  border-color: var(--stroke-strong);
+}
+
+.btn--primary {
+  background: var(--colors-primary);
+  color: var(--content-inverse);
+  border-color: var(--colors-primary);
+}
+
+.btn--primary:hover {
+  background: var(--colors-primary-hover);
+  border-color: var(--colors-primary-hover);
+}
+
+.btn--secondary {
+  background: var(--background-primary);
+  color: var(--content-primary);
+  border: 1px solid var(--stroke-primary);
+}
+
+.btn--secondary:hover {
+  border-color: var(--utility-focus);
+  color: var(--colors-primary);
+}
+
+.btn-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 12px;
+}
+
+.split-button {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.split-button__main {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 9px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+}
+
+.split-button__caret {
+  width: 32px;
+  min-width: 32px;
+  padding: 6px var(--space-md);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  position: relative;
+}
+
+.split-button__caret::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 200px;
+  background: var(--surface-raised);
+  border: 1px solid var(--stroke-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-xs);
+  z-index: 50;
+}
+
+.dropdown__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--content-primary);
+}
+
+.dropdown__item:hover {
+  background: var(--surface-muted);
+}
+
+.avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-raised);
+  margin-left: -8px;
+}
+
+.avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar--a {
+  background: #c4a574;
+}
+
+.avatar--b {
+  background: #7a9eb5;
+}
+
+.avatar--c {
+  background: #9b8aa8;
+}
+
+.avatar-stack--figma {
+  gap: 2px;
+  isolation: isolate;
+}
+
+.avatar--figma {
+  margin-left: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--content-inverse);
+  border: 2px solid var(--background-secondary);
+  box-sizing: border-box;
+}
+
+.avatar-stack--figma .avatar--figma + .avatar--figma {
+  margin-left: -8px;
+}
+
+.avatar--cat1 {
+  background: #017b6c;
+}
+
+.avatar--cat3 {
+  background: #be360b;
+  z-index: 1;
+}
+
+.workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+.workspace__scroll {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Figma 399:12011 — tree sits on Background/Secondary */
+  background: var(--background-secondary);
+  border-right: 1px solid var(--stroke-secondary);
+}
+
+/* —— Option B: tree column capped (~558); right rail grows to viewport (like Option A fill) —— */
+.app--layout-b .workspace__scroll {
+  flex: 0 1 var(--workspace-tree-column-b);
+  max-width: var(--workspace-tree-column-b);
+  min-width: 0;
+}
+
+.app--layout-b {
+  /* logical min width for rail content; rail itself grows via flex */
+  --right-rail-min: 384px;
+  --right-rail-inset: var(--space-xl);
+}
+
+.app--layout-b .right-rail {
+  flex: 1 1 0%;
+  width: auto;
+  min-width: min(var(--right-rail-min), 100%);
+  max-width: none;
+}
+
+/* Option B — right rail content uses full width; only horizontal inset (margins) */
+.app--layout-b .right-rail__header {
+  padding-left: var(--right-rail-inset);
+  padding-right: var(--right-rail-inset);
+}
+
+.app--layout-b .right-rail__body {
+  padding-left: var(--right-rail-inset);
+  padding-right: var(--right-rail-inset);
+}
+
+.app--layout-b .right-rail__view.is-active {
+  width: 100%;
+}
+
+.app--layout-b .rail-panel.rail-panel--list.is-active {
+  width: 100%;
+  max-width: none;
+}
+
+.app--layout-b .rail-panel__toolbar {
+  width: 100%;
+}
+
+.app--layout-b .l1-list {
+  width: 100%;
+}
+
+.app--layout-b .l1-list__item {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+/* —— Figma alt_a: 605px tree + 605px rail; 400px tree card centered —— */
+.app--layout-a {
+  --right-rail-width: var(--right-rail-width-a);
+}
+
+.app--layout-a .workspace__scroll {
+  flex: 0 0 var(--workspace-tree-column-a);
+  width: var(--workspace-tree-column-a);
+  max-width: var(--workspace-tree-column-a);
+  /* Tree column is not a framed “card”; flush on #f8f8f8 */
+  border-right: none;
+}
+
+/* Figma alt_a “Line 1” — divider between stacked L1 blocks */
+.app--layout-a .tree-block + .tree-block {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--stroke-secondary);
+}
+
+/* Figma alt_a Frame 628553 — 400px column, right-aligned in 605px track */
+.app--layout-a .tree-panel {
+  margin-left: auto;
+  margin-right: 0;
+  gap: var(--space-sm);
+}
+
+/* alt_a: tree sits on Background/Secondary — no white block, no outer border */
+.app--layout-a .tree-block {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.app--layout-a .tree-l1 {
+  background: transparent;
+  border-bottom: 1px solid var(--stroke-secondary);
+}
+
+.app--layout-a .tree-l2 {
+  background: transparent;
+}
+
+.app--layout-a .tree-block > .tree-l2 + .tree-l2 {
+  border-top: 1px solid var(--stroke-secondary);
+}
+
+.app--layout-a .accordion-header {
+  background: transparent;
+}
+
+.app--layout-a .accordion-header:hover {
+  background: rgba(18, 18, 18, 0.04);
+}
+
+.app--layout-a .accordion-body {
+  background: transparent;
+  border-top-color: var(--stroke-secondary);
+}
+
+.app--layout-a .tree-l3 {
+  background: transparent;
+}
+
+.app--layout-a .tree-l3:hover {
+  background: rgba(18, 18, 18, 0.04);
+}
+
+/* Figma big tree item_L3 — no link glyph; keep L3 text indent */
+.app--layout-a .tree-l3__icon {
+  display: none;
+}
+
+.app--layout-a .tree-l3 {
+  padding-left: 56px;
+}
+
+.app--layout-a .tree-overflow {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+/* Figma Frame 628554 — 400px tree column, 24px canvas inset */
+.tree-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 24px 40px;
+  box-sizing: border-box;
+}
+
+/* Figma 410:24781 — each L1 stack: white, Stroke/Primary, radius 4px */
+.tree-block {
+  background: var(--background-primary);
+  border: 1px solid var(--stroke-primary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+.tree-block > .tree-l2 + .tree-l2 {
+  border-top: 1px solid var(--stroke-secondary);
+}
+
+/* big tree item_L1 — px 16 py 8, Bold 16 / 18 */
+.tree-l1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid var(--stroke-secondary);
+  background: var(--background-primary);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 18px;
+  letter-spacing: 0;
+  color: var(--content-primary);
+  position: relative;
+  min-height: 34px;
+  padding: 8px 16px;
+}
+
+.tree-l1--with-drag {
+  gap: 8px;
+  height: auto;
+  min-height: 36px;
+  padding: 8px;
+}
+
+.tree-l1:focus {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: -2px;
+}
+
+.tree-l1__drag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--content-placeholder);
+  pointer-events: none;
+}
+
+.tree-l1__drag svg {
+  display: block;
+}
+
+.tree-l1__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-l2 {
+  margin: 0;
+  background: var(--background-primary);
+}
+
+/* big tree item_L2 — 16px leading spacer, 16px chevron, gap 8, Semibold 14/14, py 8 px 16 */
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 34px;
+  padding: 8px 16px;
+  margin: 0;
+  border: none;
+  background: var(--background-primary);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  color: var(--content-primary);
+  border-radius: 0;
+  position: relative;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.accordion-header::before {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.accordion-header:hover {
+  background: var(--background-secondary);
+}
+
+.accordion-header__chevron-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.accordion-header__chevron-btn:focus-visible {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+button.tree-l2__title {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.tree-l2__title:focus-visible {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Small glyph centered in 16px slot (Ink chevron ~10px visual, not a full box) */
+.accordion-header__chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--content-secondary);
+}
+
+.accordion-header__chevron::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-135deg);
+  margin-top: 1px;
+  transition: transform 0.15s ease;
+}
+
+/* expanded: points up; collapsed: points down */
+.accordion-header__chevron-btn[aria-expanded="false"] .accordion-header__chevron::after {
+  transform: rotate(45deg);
+  margin-top: -1px;
+}
+
+.tree-l2__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accordion-body {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-top: 1px solid var(--stroke-secondary);
+  background: var(--background-primary);
+}
+
+.accordion-body.is-collapsed {
+  display: none;
+}
+
+/* big tree item_L3 — 32px leading column (icon), gap 8, px 16 py 8, Medium 14/18 */
+.tree-l3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 8px 16px;
+  margin: 0;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--content-primary);
+  position: relative;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.tree-l3:hover {
+  background: var(--background-secondary);
+}
+
+.tree-l3__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  flex-shrink: 0;
+  color: var(--signal-accent);
+}
+
+.tree-l3__link-icon {
+  display: block;
+}
+
+.tree-l3__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* More ⋮ — 16px glyph, larger hit target (matches Ink touch) */
+.tree-overflow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  flex-shrink: 0;
+  position: relative;
+  color: var(--content-primary);
+  opacity: 0.9;
+}
+
+.tree-overflow:hover {
+  background: var(--background-tertiary);
+  opacity: 1;
+}
+
+.tree-overflow::after {
+  content: "";
+  width: 3px;
+  height: 3px;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: 0 -5px 0 currentColor, 0 5px 0 currentColor;
+  flex-shrink: 0;
+}
+
+/* Selected tree rows — solid bar, white type (Figma) */
+.tree-l1.is-selected,
+.tree-l3.is-selected {
+  background: var(--signal-selected);
+  color: var(--content-inverse);
+}
+
+.tree-l1.is-selected .tree-l1__drag {
+  color: var(--content-inverse);
+}
+
+.tree-l1.is-selected .tree-overflow {
+  color: var(--content-inverse);
+  opacity: 1;
+}
+
+.tree-l3.is-selected .tree-l3__icon,
+.tree-l3.is-selected .tree-l3__link-icon {
+  color: var(--content-inverse);
+}
+
+.accordion-header.is-selected {
+  background: var(--signal-selected);
+  color: var(--content-inverse);
+}
+
+.accordion-header.is-selected .accordion-header__chevron,
+.accordion-header.is-selected .accordion-header__chevron-btn {
+  color: var(--content-inverse);
+}
+
+.accordion-header.is-selected .tree-l2__title {
+  color: var(--content-inverse);
+}
+
+.accordion-header.is-selected .tree-overflow {
+  color: var(--content-inverse);
+  opacity: 1;
+}
+
+.right-rail {
+  flex: 0 0 var(--right-rail-width);
+  width: var(--right-rail-width);
+  min-width: min(300px, var(--right-rail-width));
+  max-width: var(--right-rail-width);
+  background: var(--background-secondary);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  align-self: stretch;
+  border-left: 1px solid var(--stroke-secondary);
+  box-shadow: none;
+}
+
+/* Right Rail-Desktop Title — p 24px, border-b stroke secondary */
+.right-rail__header {
+  flex-shrink: 0;
+  padding: 24px;
+  border-bottom: 1px solid var(--stroke-secondary);
+  min-height: 74px;
+  box-sizing: border-box;
+}
+
+.right-rail__view {
+  display: none;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.right-rail__view.is-active {
+  display: flex;
+}
+
+.right-rail__view--list .right-rail__title {
+  margin: 0;
+  flex: 1;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: var(--content-primary);
+}
+
+.right-rail__view--detail {
+  position: relative;
+  padding-right: 32px;
+}
+
+.right-rail__back {
+  border: none;
+  background: none;
+  color: var(--colors-primary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.right-rail__back:hover {
+  text-decoration: underline;
+}
+
+.right-rail__view--detail .right-rail__title {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.right-rail__title {
+  margin: 0;
+  flex: 1;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--content-primary);
+}
+
+.right-rail__close {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--content-secondary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.right-rail__close:hover {
+  background: var(--surface-muted);
+  color: var(--content-primary);
+}
+
+.right-rail__body {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px;
+}
+
+.rail-panel {
+  display: none;
+}
+
+.rail-panel.is-active {
+  display: block;
+}
+
+.rail-panel__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-lg);
+}
+
+.rail-add-btn {
+  margin: 0;
+  padding: 9px var(--space-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--background-primary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  color: var(--signal-accent);
+  cursor: pointer;
+}
+
+.rail-add-btn:hover {
+  background: var(--surface-muted);
+}
+
+.l1-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.l1-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  padding: 0 12px;
+  border: 1px solid var(--stroke-secondary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  background: var(--background-primary);
+  box-sizing: border-box;
+}
+
+.l1-list__item:hover {
+  border-color: var(--utility-focus);
+}
+
+.l1-list__item.is-active {
+  border-color: var(--signal-selected);
+  box-shadow: 0 0 0 1px var(--signal-selected);
+}
+
+.l1-list__drag {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--content-secondary);
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+
+.l1-list__drag:active {
+  cursor: grabbing;
+}
+
+.l1-list__drag svg {
+  pointer-events: none;
+}
+
+.l1-list__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.l1-list__name-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.js-l1-name {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 18px;
+  color: var(--content-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.l1-list__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.l1-list__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--signal-accent);
+  cursor: pointer;
+}
+
+.l1-list__icon-btn:hover {
+  background: rgba(43, 97, 170, 0.08);
+  color: var(--signal-accent-hover);
+}
+
+.l1-list__icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Ink: Signal/Accent text on white (Figma L1 detail “Add item”) */
+.rail-add-link {
+  display: inline-block;
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--signal-accent);
+  cursor: pointer;
+  text-align: left;
+}
+
+.rail-add-link:hover {
+  text-decoration: underline;
+}
+
+/* Dashed “add” only when used without other button classes */
+.btn-add-item:not(.btn) {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px dashed var(--stroke-default);
+  border-radius: var(--radius-md);
+  background: var(--background-secondary);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--content-primary);
+}
+
+.btn-add-item:not(.btn):hover {
+  border-color: var(--colors-primary);
+  color: var(--colors-primary);
+}
+
+.detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-panel {
+  display: none;
+}
+
+.detail-panel.is-active {
+  display: block;
+}
+
+.field-group {
+  margin-bottom: 0;
+}
+
+/* Ink label — Bold 14 / 16 */
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+  color: var(--content-primary);
+  margin-bottom: 4px;
+}
+
+.field-input,
+.field-select {
+  width: 100%;
+  height: 40px;
+  padding: 10px var(--space-md);
+  border: 1px solid var(--stroke-primary);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--content-primary);
+  background: var(--background-primary);
+  box-sizing: border-box;
+}
+
+.field-input:focus,
+.field-select:focus {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 1px;
+  border-color: var(--utility-focus);
+}
+
+.field-select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath stroke='%23121212' stroke-width='1.5' stroke-linecap='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+/* L1 detail — align with Figma “Add item” (shares .rail-add-link) */
+.rail-add-link.detail-add-item {
+  align-self: flex-end;
+  margin-bottom: 16px;
+}
+
+.detail-l2-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0;
+}
+
+.detail-l2-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 68px;
+  padding: 0 12px;
+  border: 1px solid var(--stroke-secondary);
+  border-radius: var(--radius-sm);
+  background: var(--background-primary);
+}
+
+.detail-l2-row:hover {
+  border-color: var(--utility-focus);
+}
+
+.detail-l2-row__label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 18px;
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-l3-section {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--stroke-subtle);
+}
+
+.detail-l3-section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+#js-detail-add-l3 {
+  border: none;
+  background: none;
+  color: var(--signal-accent);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+}
+
+#js-detail-add-l3:hover {
+  text-decoration: underline;
+  background: transparent;
+}
+
+.detail-l3-section__label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--content-secondary);
+}
+
+.detail-l3-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.detail-l3-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  padding: 0 12px;
+  border: 1px solid var(--stroke-secondary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  background: var(--background-primary);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.detail-l3-row:hover {
+  border-color: var(--utility-focus);
+}
+
+.detail-l3-row__drag {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: grab;
+  color: var(--content-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+
+.detail-l3-row__drag:active {
+  cursor: grabbing;
+}
+
+.detail-l3-row__drag svg {
+  pointer-events: none;
+}
+
+.detail-l3-row__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-l3-row__label {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 18px;
+}
+
+.detail-l3-row__type {
+  font-size: 11px;
+  color: var(--content-secondary);
+  text-transform: uppercase;
+}
+
+.detail-l3-row__delete {
+  border: none;
+  background: transparent;
+  color: #b00020;
+  font-size: 12px;
+  font-weight: 600;
+  padding: var(--space-xs);
+}
+
+.sortable-list.is-sortable-dragging .detail-l3-row:not(.is-dragging) {
+  opacity: 0.85;
+}
+
+.detail-l3-row.is-dragging {
+  opacity: 0.5;
+  box-shadow: var(--shadow-pop);
+}
+
+.l1-list__item.is-sortable-dragging {
+  opacity: 0.6;
+}
+
+.popover {
+  position: fixed;
+  z-index: 100;
+  min-width: 180px;
+  background: var(--surface-raised);
+  border: 1px solid var(--stroke-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-xs);
+}
+
+.popover__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.popover__item:hover {
+  background: var(--surface-muted);
+}
+
+.popover__item--danger {
+  color: #b00020;
+}
+
+.toast {
+  position: fixed;
+  bottom: var(--space-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  padding: var(--space-md) var(--space-xl);
+  background: var(--content-primary);
+  color: var(--content-inverse);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-pop);
+  max-width: 90vw;
+}
+
+.toast.is-visible {
+  display: block;
+}

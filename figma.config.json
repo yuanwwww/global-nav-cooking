@@ -1,0 +1,10 @@
+{
+  "codeConnect": {
+    "parser": "react",
+    "include": ["src/**/*.figma.jsx"],
+    "exclude": ["**/dist/**", "**/node_modules/**"],
+    "label": "React",
+    "language": "jsx",
+    "interactiveSetupFigmaFileUrl": "https://www.figma.com/design/iB0GVTl3402z2Hvs11EEvn/Global-Nav-in-cooking"
+  }
+}

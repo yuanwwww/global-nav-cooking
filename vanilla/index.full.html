@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Nav in Cooking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Product">
+      <div class="sidebar__brand">
+        <div class="sidebar__logo" aria-hidden="true">T</div>
+        <span class="sidebar__wordmark">Scoop</span>
+      </div>
+      <nav class="sidebar__nav" aria-label="Applications">
+        <a class="sidebar__item" href="#">Oak</a>
+        <a class="sidebar__item" href="#">Story Dash</a>
+        <a class="sidebar__item" href="#">Live Admin</a>
+        <a class="sidebar__item sidebar__item--active" href="#">All</a>
+      </nav>
+      <div class="sidebar__footer">
+        <button type="button" class="sidebar__help" aria-label="Help">?</button>
+        <div class="sidebar__profile" title="Profile">EL</div>
+      </div>
+    </aside>
+
+    <div class="app__main">
+      <header class="topbar">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <span class="breadcrumb__text">Cooking</span>
+          <span class="breadcrumb__sep" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M4.5 2L9 6l-4.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="breadcrumb__text breadcrumb__text--current">Global Nav</span>
+        </nav>
+        <div class="topbar__actions">
+          <button type="button" class="btn btn--preview">Preview</button>
+          <span id="save-status" class="topbar__saved">Saved</span>
+          <div class="split-button" data-publish-split>
+            <button type="button" class="btn btn--primary split-button__main" id="btn-publish-main">Publish</button>
+            <button type="button" class="btn btn--primary split-button__caret" id="btn-publish-menu" aria-haspopup="true" aria-expanded="false" aria-label="Publish options"></button>
+            <div class="dropdown" id="publish-dropdown" hidden role="menu">
+              <button type="button" class="dropdown__item" role="menuitem" data-publish-action="publish-now">Publish now</button>
+              <button type="button" class="dropdown__item" role="menuitem" data-publish-action="schedule">Schedule…</button>
+              <button type="button" class="dropdown__item" role="menuitem" data-publish-action="discard">Discard draft</button>
+            </div>
+          </div>
+          <div class="avatar-stack" aria-hidden="true">
+            <span class="avatar avatar--a"></span>
+            <span class="avatar avatar--b"></span>
+            <span class="avatar avatar--c"></span>
+          </div>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <div class="workspace__scroll" id="workspace-scroll">
+          <div class="tree-panel" id="tree-panel">
+            <section class="tree-block" data-tree-level="l1" data-tree-label="What to Cook">
+              <div class="tree-l1 js-tree-l1" data-tree-level="l1" data-tree-label="What to Cook" tabindex="0">
+                <span class="tree-l1__label">What to Cook</span>
+                <button type="button" class="tree-overflow js-tree-overflow" aria-label="What to Cook options"></button>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Staff picks">Staff picks</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Staff picks options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Editors’ favorites">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Editors’ favorites</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="New this week">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">New this week</span>
+                  </a>
+                </div>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Most Popular">Most Popular</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Most Popular options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Top saved recipes">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Top saved recipes</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Trending searches">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Trending searches</span>
+                  </a>
+                </div>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Soups and Stews">Soups and Stews</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Soups and Stews options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Chicken noodle">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Chicken noodle</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Vegetarian chili">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Vegetarian chili</span>
+                  </a>
+                </div>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="newsletters">newsletters</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="newsletters options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="The Morning newsletter">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">The Morning newsletter</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Cooking digest">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Cooking digest</span>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <section class="tree-block" data-tree-level="l1" data-tree-label="Recipes">
+              <div class="tree-l1 tree-l1--with-drag js-tree-l1" data-tree-level="l1" data-tree-label="Recipes" tabindex="0">
+                <span class="tree-l1__drag" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <circle cx="6" cy="5" r="1.3" fill="currentColor" />
+                    <circle cx="10" cy="5" r="1.3" fill="currentColor" />
+                    <circle cx="14" cy="5" r="1.3" fill="currentColor" />
+                    <circle cx="6" cy="10" r="1.3" fill="currentColor" />
+                    <circle cx="10" cy="10" r="1.3" fill="currentColor" />
+                    <circle cx="14" cy="10" r="1.3" fill="currentColor" />
+                    <circle cx="6" cy="15" r="1.3" fill="currentColor" />
+                    <circle cx="10" cy="15" r="1.3" fill="currentColor" />
+                    <circle cx="14" cy="15" r="1.3" fill="currentColor" />
+                  </svg>
+                </span>
+                <span class="tree-l1__label">Recipes</span>
+                <button type="button" class="tree-overflow js-tree-overflow" aria-label="Recipes options"></button>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="By course">By course</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="By course options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Appetizers">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Appetizers</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Mains">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Mains</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Desserts">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Desserts</span>
+                  </a>
+                </div>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="By diet">By diet</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="By diet options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Vegetarian">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Vegetarian</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Vegan">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Vegan</span>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <section class="tree-block" data-tree-level="l1" data-tree-label="Ingredients">
+              <div class="tree-l1 js-tree-l1" data-tree-level="l1" data-tree-label="Ingredients" tabindex="0">
+                <span class="tree-l1__label">Ingredients</span>
+                <button type="button" class="tree-overflow js-tree-overflow" aria-label="Ingredients options"></button>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Proteins">Proteins</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Proteins options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Chicken">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Chicken</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Beef">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Beef</span>
+                  </a>
+                </div>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Produce">Produce</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Produce options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Tomatoes">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Tomatoes</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Leafy greens">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Leafy greens</span>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <section class="tree-block" data-tree-level="l1" data-tree-label="Occasions">
+              <div class="tree-l1 js-tree-l1" data-tree-level="l1" data-tree-label="Occasions" tabindex="0">
+                <span class="tree-l1__label">Occasions</span>
+                <button type="button" class="tree-overflow js-tree-overflow" aria-label="Occasions options"></button>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Holidays">Holidays</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Holidays options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Thanksgiving">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Thanksgiving</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Christmas">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Christmas</span>
+                  </a>
+                </div>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Everyday">Everyday</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Everyday options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Weeknight dinners">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Weeknight dinners</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Brunch">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Brunch</span>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <section class="tree-block" data-tree-level="l1" data-tree-label="About">
+              <div class="tree-l1 js-tree-l1" data-tree-level="l1" data-tree-label="About" tabindex="0">
+                <span class="tree-l1__label">About</span>
+                <button type="button" class="tree-overflow js-tree-overflow" aria-label="About options"></button>
+              </div>
+              <div class="tree-l2">
+                <div class="accordion-header js-accordion-header" role="button" tabindex="0" aria-expanded="true">
+                  <span class="accordion-header__chevron" aria-hidden="true"></span>
+                  <span class="tree-l2__title js-tree-l2" data-tree-level="l2" data-tree-label="Help">Help</span>
+                  <button type="button" class="tree-overflow js-tree-overflow" aria-label="Help options"></button>
+                </div>
+                <div class="accordion-body">
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="FAQ">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">FAQ</span>
+                  </a>
+                  <a href="#" class="tree-l3 js-tree-l3" data-tree-level="l3" data-tree-label="Contact us">
+                    <span class="tree-l3__icon" aria-hidden="true"><svg class="tree-l3__link-icon" viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6 2h8v8h-2V5.4L3.7 13 2 11.3 10.3 3H6V2z"/></svg></span>
+                    <span class="tree-l3__label">Contact us</span>
+                  </a>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <aside class="right-rail" id="right-rail" aria-label="Navigation editor">
+          <div class="right-rail__header">
+            <div class="right-rail__view right-rail__view--list is-active" id="rail-view-list">
+              <h2 class="right-rail__title">All L1s</h2>
+            </div>
+            <div class="right-rail__view right-rail__view--detail" id="rail-view-detail" hidden>
+              <button type="button" class="right-rail__back js-rail-back">All L1s</button>
+              <h2 class="right-rail__title js-rail-detail-title" id="rail-detail-title">Detail</h2>
+              <button type="button" class="right-rail__close js-rail-close" aria-label="Close detail">×</button>
+            </div>
+          </div>
+          <div class="right-rail__body">
+            <div class="rail-panel rail-panel--list is-active" id="rail-panel-list">
+              <ul class="l1-list" id="l1-list"></ul>
+              <button type="button" class="rail-add-link" id="btn-add-new-l1">Add item</button>
+            </div>
+            <div class="rail-panel rail-panel--detail" id="rail-panel-detail" hidden>
+              <div class="detail-stack">
+                <div class="detail-panel" id="detail-panel-simple" hidden>
+                  <div class="field-group">
+                    <label class="field-label" for="field-display">Display name</label>
+                    <input type="text" id="field-display" class="field-input" />
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="field-link">Link</label>
+                    <input type="url" id="field-link" class="field-input" placeholder="https://" />
+                  </div>
+                </div>
+
+                <div class="detail-panel" id="detail-panel-l1" hidden>
+                  <div class="field-group">
+                    <label class="field-label" for="field-l1-display">Display name</label>
+                    <input type="text" id="field-l1-display" class="field-input" />
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="field-l1-slug">Link</label>
+                    <input type="text" id="field-l1-slug" class="field-input" placeholder="/cooking/…" />
+                  </div>
+                  <button type="button" class="rail-add-link detail-add-item" id="js-add-l2-under-l1">Add item</button>
+                  <div class="detail-l2-tiles" id="detail-l1-tiles" aria-label="L2 sections"></div>
+                </div>
+
+                <div class="detail-panel" id="detail-panel-l2" hidden>
+                  <div class="field-group">
+                    <label class="field-label" for="field-l2-display">Display name</label>
+                    <input type="text" id="field-l2-display" class="field-input" />
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="field-l2-slug">Link</label>
+                    <input type="text" id="field-l2-slug" class="field-input" placeholder="/cooking/…" />
+                  </div>
+                  <div class="detail-l3-section">
+                    <div class="detail-l3-section__head">
+                      <span class="detail-l3-section__label">L3 links</span>
+                      <button type="button" class="btn btn--ghost btn-sm" id="js-detail-add-l3">Add L3</button>
+                    </div>
+                    <ul class="detail-l3-list sortable-list" id="detail-l3-list"></ul>
+                  </div>
+                </div>
+
+                <div class="detail-panel" id="detail-panel-l3" hidden>
+                  <div class="field-group">
+                    <label class="field-label" for="field-l3-display">Label</label>
+                    <input type="text" id="field-l3-display" class="field-input" />
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="field-l3-type">Type</label>
+                    <select id="field-l3-type" class="field-select">
+                      <option value="tk">TK</option>
+                      <option value="collection">Collection</option>
+                      <option value="link">Link</option>
+                      <option value="recipe">Recipe</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="field-l3-link">URL or ID</label>
+                    <input type="text" id="field-l3-link" class="field-input" placeholder="/collections/…" />
+                  </div>
+                </div>
+
+                <div class="detail-panel" id="detail-panel-add-l1" hidden>
+                  <div class="field-group">
+                    <label class="field-label" for="add-new-l1-title">New L1 title</label>
+                    <input type="text" id="add-new-l1-title" class="field-input" placeholder="e.g. Guides" />
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="add-new-l1-slug">Slug</label>
+                    <input type="text" id="add-new-l1-slug" class="field-input" />
+                  </div>
+                </div>
+
+                <div class="detail-panel" id="detail-panel-add-l2" hidden>
+                  <div class="field-group">
+                    <label class="field-label" for="add-new-l2-title">New L2 title</label>
+                    <input type="text" id="add-new-l2-title" class="field-input" />
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="add-new-l2-slug">Slug</label>
+                    <input type="text" id="add-new-l2-slug" class="field-input" />
+                  </div>
+                </div>
+
+                <div class="detail-panel" id="detail-panel-add-l3" hidden>
+                  <div class="field-group">
+                    <label class="field-label" for="add-new-l3-label">New L3 label</label>
+                    <input type="text" id="add-new-l3-label" class="field-input" />
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="add-new-l3-type">Type</label>
+                    <select id="add-new-l3-type" class="field-select">
+                      <option value="tk">TK</option>
+                      <option value="collection">Collection</option>
+                      <option value="link">Link</option>
+                      <option value="recipe">Recipe</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="add-new-l3-link">URL or ID</label>
+                    <input type="text" id="add-new-l3-link" class="field-input" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div id="popover" class="popover" hidden role="dialog" aria-modal="true"></div>
+  <div id="toast" class="toast" hidden role="status"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
