@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 
+/** Opens in a new tab; set `VITE_PREVIEW_URL` in `.env` to override the default. */
+const DEFAULT_PREVIEW_URL = "https://cooking.nytimes.com";
+
 export function Topbar({ dirty, layoutVariant, onLayoutVariantChange }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const splitRef = useRef(null);
+  const previewUrl = import.meta.env.VITE_PREVIEW_URL || DEFAULT_PREVIEW_URL;
 
   useEffect(() => {
     function onDoc(e) {
@@ -27,13 +31,21 @@ export function Topbar({ dirty, layoutVariant, onLayoutVariantChange }) {
             />
           </svg>
         </span>
-        <span className="breadcrumb__text">Global Nav</span>
+        <span className="breadcrumb__text breadcrumb__text--current" aria-current="page">
+          Global Nav
+        </span>
       </nav>
 
       <div className="topbar__center">
-        <button type="button" className="btn btn--preview-chip">
+        <a
+          href={previewUrl}
+          className="btn btn--preview-chip"
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`Open preview: ${previewUrl}`}
+        >
           Preview
-        </button>
+        </a>
       </div>
 
       <div className="topbar__actions">

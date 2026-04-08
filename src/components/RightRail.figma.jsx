@@ -1,4 +1,5 @@
 import figma from "@figma/code-connect/react";
+import { NAV_TREE } from "../data/treeData.js";
 import { RightRail } from "./RightRail.jsx";
 
 /**
@@ -10,9 +11,9 @@ figma.connect(
   {
     example: () => (
       <RightRail
-        l1Labels={["What to cook", "From our newsletters", "Cooking guides"]}
-        activeL1="What to cook"
-        onPickL1={() => {}}
+        tree={NAV_TREE}
+        selection={{ kind: "l2", l1: "What to Cook", l2: "Staff picks" }}
+        onSelect={() => {}}
       />
     ),
   },

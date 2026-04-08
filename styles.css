@@ -37,7 +37,7 @@
   /* Figma alt_b — Right Rail-Desktop */
   --right-rail-width: 384px;
   /* Figma Frame 628553 — tree column */
-  --workspace-tree-column-b: 558px;
+  --workspace-tree-column-b: 720px;
   /* Figma alt_a — equal split 605 + 605 (+ sidebar 70 = 1280) */
   --workspace-tree-column-a: 605px;
   --right-rail-width-a: 605px;
@@ -302,6 +302,8 @@ button {
 }
 
 .btn--preview-chip {
+  display: inline-flex;
+  align-items: center;
   border: none;
   background: var(--background-tertiary);
   color: var(--content-primary);
@@ -310,6 +312,9 @@ button {
   font-size: 12px;
   font-weight: 600;
   line-height: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .btn--preview-chip:hover {
@@ -322,13 +327,13 @@ button {
   gap: var(--space-xs);
   flex-shrink: 0;
   font-size: 14px;
-  font-weight: 600;
   line-height: 14px;
   color: var(--content-primary);
 }
 
 .breadcrumb__text {
   color: var(--content-primary);
+  font-weight: 500;
 }
 
 .breadcrumb__text--current {
@@ -569,17 +574,27 @@ button {
   border-right: 1px solid var(--stroke-secondary);
 }
 
-/* —— Option B: tree column capped (~558); right rail grows to viewport (like Option A fill) —— */
+/* —— Option B: tree column capped; panel centered in this track; right rail grows —— */
 .app--layout-b .workspace__scroll {
   flex: 0 1 var(--workspace-tree-column-b);
   max-width: var(--workspace-tree-column-b);
   min-width: 0;
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .app--layout-b {
   /* logical min width for rail content; rail itself grows via flex */
   --right-rail-min: 384px;
   --right-rail-inset: var(--space-xl);
+}
+
+/* Layout B + rail closed: single tree column — center in main area (not left with empty right) */
+.app--layout-b .workspace.workspace--b-no-rail {
+  justify-content: center;
+  background: var(--background-secondary);
 }
 
 .app--layout-b .right-rail {
@@ -636,21 +651,22 @@ button {
   border-right: none;
 }
 
-/* Figma alt_a “Line 1” — divider between stacked L1 blocks */
-.app--layout-a .tree-block + .tree-block {
+/* Figma alt_a tree IA — shared with alt_b so both modes use the same nav tree presentation */
+.app--layout-a .tree-block + .tree-block,
+.app--layout-b .tree-block + .tree-block {
   margin-top: var(--space-xl);
   padding-top: var(--space-xl);
   border-top: 1px solid var(--stroke-secondary);
 }
 
-/* Figma alt_a Frame 628553 — 400px column, right-aligned in 605px track */
+/* Frame 628553 — layout A: tree right-aligned in 605px track */
 .app--layout-a .tree-panel {
   margin-left: auto;
   margin-right: 0;
   gap: var(--space-sm);
 }
 
-/* alt_a: tree sits on Background/Secondary — no white block, no outer border */
+/* Layout A — tree flush on Background/Secondary (no white L1 cards) */
 .app--layout-a .tree-block {
   background: transparent;
   border: none;
@@ -692,16 +708,143 @@ button {
   background: rgba(18, 18, 18, 0.04);
 }
 
-/* Figma big tree item_L3 — no link glyph; keep L3 text indent */
-.app--layout-a .tree-l3__icon {
-  display: none;
+/* Layout B — Figma 650:44409 rest state: white L1 cards, stroke primary, 8px inset */
+.app--layout-b .tree-block {
+  padding: var(--space-sm);
 }
 
-.app--layout-a .tree-l3 {
-  padding-left: 56px;
+.app--layout-b .tree-panel {
+  gap: var(--space-lg);
+  padding-top: 32px;
+  /* Centered in tree column (align-items on .workspace__scroll) */
+  max-width: min(640px, 100%);
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  flex-shrink: 0;
 }
 
-.app--layout-a .tree-overflow {
+.tree-panel__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  align-items: flex-start;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+/* Figma 650:45414 — all L1s / sort */
+.tree-panel__l1-sort-board {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--background-secondary);
+  border: 1px solid var(--stroke-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.tree-panel__l1-sort-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  padding: 24px;
+  box-sizing: border-box;
+  background: var(--background-primary);
+  border: 1px solid var(--stroke-primary);
+  border-radius: var(--radius-sm);
+  width: 100%;
+  cursor: grab;
+  user-select: none;
+}
+
+.tree-panel__l1-sort-row:active {
+  cursor: grabbing;
+}
+
+.tree-panel__l1-sort-row--dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.tree-panel__l1-sort-row--over {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
+}
+
+.tree-panel__l1-sort-drag {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--content-placeholder);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tree-panel__l1-sort-drag svg {
+  display: block;
+}
+
+.tree-panel__l1-sort-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.tree-panel__l1-sort-title {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 18px;
+  color: var(--content-primary);
+}
+
+.tree-panel__l1-sort-sub {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--content-secondary);
+}
+
+.tree-panel__l1-sort-chevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--content-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tree-panel__l1-sort-chevron svg {
+  display: block;
+}
+
+.btn--tree-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 32px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  box-sizing: border-box;
+}
+
+.btn--tree-toolbar svg {
+  flex-shrink: 0;
+}
+
+/* React tree L3: no link-out arrow; spacer keeps label aligned with prior 32px icon column */
+
+.app--layout-a .tree-overflow,
+.app--layout-b .tree-overflow {
   width: 16px;
   height: 16px;
   min-width: 16px;
@@ -753,9 +896,8 @@ button {
   padding: 8px 16px;
 }
 
-.tree-l1--with-drag {
-  gap: 8px;
-  height: auto;
+/* L1 row with compact horizontal padding (e.g. Recipes; no drag handle) */
+.tree-l1--tight {
   min-height: 36px;
   padding: 8px;
 }
@@ -763,21 +905,6 @@ button {
 .tree-l1:focus {
   outline: 2px solid var(--utility-focus);
   outline-offset: -2px;
-}
-
-.tree-l1__drag {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  color: var(--content-placeholder);
-  pointer-events: none;
-}
-
-.tree-l1__drag svg {
-  display: block;
 }
 
 .tree-l1__label {
@@ -791,6 +918,14 @@ button {
 .tree-l2 {
   margin: 0;
   background: var(--background-primary);
+}
+
+.tree-l2--drop-hover > .accordion-header {
+  box-shadow: inset 0 0 0 1px var(--utility-focus, #4a90d9);
+}
+
+.tree-l3.tree-l3--drop-hover {
+  box-shadow: inset 0 0 0 1px var(--utility-focus, #4a90d9);
 }
 
 /* big tree item_L2 — 16px leading spacer, 16px chevron, gap 8, Semibold 14/14, py 8 px 16 */
@@ -815,12 +950,65 @@ button {
   box-sizing: border-box;
 }
 
-.accordion-header::before {
-  content: "";
+/* L2 / L3 drag grip — show only when hovering the handle strip (not the whole row), so select / chevron / link stay distinct */
+.tree-row__drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 32px;
+  min-height: 32px;
+  margin: -4px 0 -4px -6px;
+  padding: 0 4px 0 6px;
+  color: var(--content-placeholder);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  /* Let clicks pass through to the row until the handle is hovered (avoids invisible hit-box stealing L2 selection) */
+  pointer-events: none;
+  cursor: grab;
+  box-sizing: border-box;
+}
+
+.tree-row__drag-handle:active {
+  cursor: grabbing;
+}
+
+.tree-row__drag-handle svg {
   display: block;
   width: 16px;
   height: 16px;
-  flex-shrink: 0;
+}
+
+/* Visibility only on hover over the handle strip — never tied to .is-selected */
+.tree-row__drag-handle--l2:hover,
+.tree-row__drag-handle--l3:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tree-row__drag-handle--l2:active,
+.tree-row__drag-handle--l3:active {
+  pointer-events: auto;
+}
+
+/* Selected row: icon color when hovering the handle only (not when merely selected) */
+.accordion-header.is-selected .tree-row__drag-handle--l2:hover {
+  color: var(--content-inverse);
+}
+
+.tree-l3.is-selected .tree-row__drag-handle--l3:hover {
+  color: var(--content-inverse);
+}
+
+.app--layout-b .accordion-header.is-selected .tree-row__drag-handle--l2:hover,
+.app--layout-b .tree-l3.is-selected .tree-row__drag-handle--l3:hover {
+  color: var(--content-placeholder);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-row__drag-handle {
+    transition: none;
+  }
 }
 
 .accordion-header:hover {
@@ -940,6 +1128,11 @@ button.tree-l2__title:focus-visible {
   background: var(--background-secondary);
 }
 
+.tree-l3__spacer {
+  width: 32px;
+  flex-shrink: 0;
+}
+
 .tree-l3__icon {
   display: flex;
   align-items: center;
@@ -1003,10 +1196,6 @@ button.tree-l2__title:focus-visible {
   color: var(--content-inverse);
 }
 
-.tree-l1.is-selected .tree-l1__drag {
-  color: var(--content-inverse);
-}
-
 .tree-l1.is-selected .tree-overflow {
   color: var(--content-inverse);
   opacity: 1;
@@ -1036,6 +1225,52 @@ button.tree-l2__title:focus-visible {
   opacity: 1;
 }
 
+/* Layout B — selection reads against white cards: calm fill + accent rail (Figma rest-state family) */
+.app--layout-b .tree-l1.is-selected,
+.app--layout-b .tree-l3.is-selected {
+  background: var(--background-secondary);
+  color: var(--content-primary);
+  box-shadow: inset 3px 0 0 var(--signal-accent);
+}
+
+.app--layout-b .tree-l1.is-selected .tree-overflow {
+  color: var(--content-primary);
+  opacity: 0.9;
+}
+
+.app--layout-b .tree-l3.is-selected .tree-l3__icon,
+.app--layout-b .tree-l3.is-selected .tree-l3__link-icon {
+  color: var(--signal-accent);
+}
+
+.app--layout-b .accordion-header.is-selected {
+  background: var(--background-secondary);
+  color: var(--content-primary);
+  box-shadow: inset 3px 0 0 var(--signal-accent);
+}
+
+.app--layout-b .accordion-header.is-selected .accordion-header__chevron,
+.app--layout-b .accordion-header.is-selected .accordion-header__chevron-btn {
+  color: var(--content-secondary);
+}
+
+.app--layout-b .accordion-header.is-selected .tree-l2__title {
+  color: var(--content-primary);
+}
+
+.app--layout-b .accordion-header.is-selected .tree-overflow {
+  color: var(--content-primary);
+  opacity: 0.9;
+}
+
+.app--layout-b .accordion-header:hover:not(.is-selected) {
+  background: var(--background-secondary);
+}
+
+.app--layout-b .tree-l3:hover:not(.is-selected) {
+  background: var(--background-secondary);
+}
+
 .right-rail {
   flex: 0 0 var(--right-rail-width);
   width: var(--right-rail-width);
@@ -1048,6 +1283,27 @@ button.tree-l2__title:focus-visible {
   align-self: stretch;
   border-left: 1px solid var(--stroke-secondary);
   box-shadow: none;
+}
+
+/* Add-item draft state — Figma dev accent */
+.right-rail--add-draft {
+  border-left-width: 4px;
+  border-left-color: #f79cff;
+}
+
+.rail-add-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+}
+
+.right-rail__empty {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-xl);
+  box-sizing: border-box;
 }
 
 /* Right Rail-Desktop Title — p 24px, border-b stroke secondary */
@@ -1067,6 +1323,56 @@ button.tree-l2__title:focus-visible {
 
 .right-rail__view.is-active {
   display: flex;
+}
+
+.right-rail__view--detail.is-active {
+  align-items: flex-start;
+}
+
+.right-rail__heading-block {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.right-rail__context {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 14px;
+  color: var(--content-secondary);
+}
+
+/* Layout B L1 header — Figma 665:46265 (Ink Head XL) */
+.right-rail__title--xl {
+  font-size: 24px;
+  line-height: 26px;
+}
+
+.rail-layout-b__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rail-layout-b__add-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn--signal-outline {
+  color: var(--signal-accent);
+}
+
+.btn--signal-outline:hover {
+  border-color: var(--utility-focus);
+  color: var(--signal-accent-hover);
+}
+
+.field-label__req {
+  color: var(--signal-error, #c00);
 }
 
 .right-rail__view--list .right-rail__title {
@@ -1118,8 +1424,8 @@ button.tree-l2__title:focus-visible {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border: none;
   background: transparent;
   font-size: 20px;
@@ -1130,11 +1436,18 @@ button.tree-l2__title:focus-visible {
   align-items: center;
   justify-content: center;
   padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .right-rail__close:hover {
   background: var(--surface-muted);
   color: var(--content-primary);
+}
+
+.right-rail__close:focus-visible {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
 }
 
 .right-rail__body {
@@ -1417,6 +1730,14 @@ button.tree-l2__title:focus-visible {
   line-height: 18px;
   flex: 1;
   min-width: 0;
+}
+
+button.detail-l2-row__label {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  color: inherit;
 }
 
 .detail-l3-section {

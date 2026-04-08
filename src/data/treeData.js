@@ -1,7 +1,7 @@
 /** Landing / selected-frame hierarchy (matches design board + PNG) */
 export const NAV_TREE = [
   {
-    label: "What to cook",
+    label: "What to Cook",
     l2s: [
       { label: "Staff picks", l3s: ["Editors’ favorites", "New this week"] },
       { label: "Most Popular", l3s: ["Top saved recipes", "Trending searches"] },
@@ -14,7 +14,7 @@ export const NAV_TREE = [
   },
   {
     label: "Recipes",
-    withDrag: true,
+    l1TightPadding: true,
     l2s: [
       {
         label: "By course",
@@ -25,6 +25,7 @@ export const NAV_TREE = [
   },
   {
     label: "Ingredients",
+    l1SortChevron: true,
     l2s: [
       { label: "Proteins", l3s: ["Chicken", "Beef"] },
       { label: "Produce", l3s: ["Tomatoes", "Leafy greens"] },

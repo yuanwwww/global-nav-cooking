@@ -12,7 +12,7 @@ figma.connect(
     example: () => (
       <TreePanel
         tree={NAV_TREE}
-        selection={{ kind: "l2", l1: "What to cook", l2: "Staff picks" }}
+        selection={{ kind: "l2", l1: "What to Cook", l2: "Staff picks" }}
         onSelect={() => {}}
       />
     ),
