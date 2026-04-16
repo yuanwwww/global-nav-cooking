@@ -2,20 +2,26 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 import { NAV_TREE } from "./data/treeData.js";
 import {
+  addL1Block,
   addL2Child,
   addL3Child,
+  createNewL1Block,
   uniqueAmong,
+  removeL1Block,
   removeL2Child,
   renameL2Child,
   removeL3Child,
   renameL3Child,
   reorderL2Children,
   reorderL3Children,
+  l3Label,
 } from "./data/treeMutations.js";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { Topbar } from "./components/Topbar.jsx";
 import { TreePanel } from "./components/TreePanel.jsx";
 import { RightRail } from "./components/RightRail.jsx";
+import { AddL1Modal } from "./components/AddL1Modal.jsx";
+import { ConfirmDeleteModal } from "./components/ConfirmDeleteModal.jsx";
 
 export default function App() {
   /** null = no tree focus; layout B hides the right rail until something is selected */
@@ -23,12 +29,22 @@ export default function App() {
   const [dirty, setDirty] = useState(false);
   /** Figma: alt_a = wider split rail; alt_b = tree column + rest-state cards (default) */
   const [layoutVariant, setLayoutVariant] = useState("b");
-  /** Working copy; L1 order updated after Sort L1 → Okay */
+  /** Working copy; L1 order updated after Reorder Sections → Confirm changes */
   const [navTree, setNavTree] = useState(() => [...NAV_TREE]);
   /** Right-rail add flow: replaces detail with NEW L2 / NEW L3 form */
   const [railDraft, setRailDraft] = useState(null);
   /** One-shot: expand L2 accordion after adding a child L2 */
   const [expandL2Target, setExpandL2Target] = useState(null);
+  /** Add nav modal: `parentL1` null = new L1; set + `parentL2` null = under L1; set both = L3 under L2 */
+  const [addNavModal, setAddNavModal] = useState({
+    open: false,
+    parentL1: null,
+    parentL2: null,
+  });
+  /** One-shot: scroll tree panel to this L1 label after add */
+  const [scrollTreeToL1, setScrollTreeToL1] = useState(null);
+  /** Confirm-delete modal: `kind` + labels for removeL1Block / removeL2Child / removeL3Child */
+  const [deleteModal, setDeleteModal] = useState(null);
 
   const railDraftRef = useRef(null);
   railDraftRef.current = railDraft;
@@ -113,7 +129,7 @@ export default function App() {
       setNavTree((prev) => {
         const block = prev.find((b) => b.label === l1);
         const l2node = block?.l2s.find((x) => x.label === l2);
-        const existing = l2node?.l3s ?? [];
+        const existing = (l2node?.l3s ?? []).map(l3Label);
         draftL3Label = uniqueAmong("New link", existing);
         return addL3Child(prev, l1, l2, draftL3Label);
       });
@@ -163,7 +179,7 @@ export default function App() {
       setNavTree((prev) => {
         const block = prev.find((b) => b.label === l1);
         const l2node = block?.l2s.find((x) => x.label === l2);
-        const existing = l2node?.l3s ?? [];
+        const existing = (l2node?.l3s ?? []).map(l3Label);
         const taken = existing.filter((x) => x !== draftL3Label);
         finalLabel = uniqueAmong(payload.displayName, taken);
         if (finalLabel === draftL3Label) return prev;
@@ -209,6 +225,112 @@ export default function App() {
 
   const onExpandL2Consumed = useCallback(() => setExpandL2Target(null), []);
 
+  const onScrollTreeToL1Consumed = useCallback(() => setScrollTreeToL1(null), []);
+
+  const openAddNavModal = useCallback((parentL1, parentL2 = null) => {
+    setAddNavModal({ open: true, parentL1, parentL2 });
+  }, []);
+
+  const openDeleteModal = useCallback((payload) => {
+    setDeleteModal(payload);
+  }, []);
+
+  const closeDeleteModal = useCallback(() => setDeleteModal(null), []);
+
+  const onConfirmDelete = useCallback(() => {
+    const d = deleteModal;
+    if (!d) return;
+    setDeleteModal(null);
+    setRailDraft(null);
+    setExpandL2Target(null);
+    if (d.kind === "l1") {
+      setNavTree((prev) => removeL1Block(prev, d.l1));
+      setSelection((sel) => {
+        if (!sel || sel.l1 !== d.l1) return sel;
+        return null;
+      });
+    } else if (d.kind === "l2") {
+      setNavTree((prev) => removeL2Child(prev, d.l1, d.l2));
+      setSelection((sel) => {
+        if (!sel || sel.l1 !== d.l1) return sel;
+        if (sel.kind === "l1") return sel;
+        if (sel.kind === "l2" && sel.l2 === d.l2) return { kind: "l1", l1: d.l1 };
+        if (sel.kind === "l3" && sel.l2 === d.l2) return { kind: "l1", l1: d.l1 };
+        return sel;
+      });
+    } else {
+      setNavTree((prev) => removeL3Child(prev, d.l1, d.l2, d.l3));
+      setSelection((sel) => {
+        if (!sel) return sel;
+        if (sel.kind === "l3" && sel.l1 === d.l1 && sel.l2 === d.l2 && sel.l3 === d.l3) {
+          return { kind: "l2", l1: d.l1, l2: d.l2 };
+        }
+        return sel;
+      });
+    }
+    setDirty(true);
+  }, [deleteModal]);
+
+  const onConfirmAddNav = useCallback(
+    ({ parentL1, parentL2, displayName, level, navType, navLink }) => {
+      const linkTrim = typeof navLink === "string" ? navLink.trim() : "";
+      if (parentL1 != null && parentL2 != null) {
+        setNavTree((prev) =>
+          addL3Child(prev, parentL1, parentL2, {
+            label: displayName,
+            navType,
+            ...(linkTrim !== "" ? { navLink: linkTrim } : {}),
+          })
+        );
+        setSelection({ kind: "l3", l1: parentL1, l2: parentL2, l3: displayName });
+        setRailDraft(null);
+        setExpandL2Target({ l1: parentL1, l2: parentL2 });
+        setAddNavModal({ open: false, parentL1: null, parentL2: null });
+        setDirty(true);
+        return;
+      }
+      if (parentL1 == null) {
+        const block = createNewL1Block(displayName, level, {
+          ...(navType ? { navType } : {}),
+          navLink,
+        });
+        setNavTree((prev) => addL1Block(prev, block));
+        setSelection({ kind: "l1", l1: displayName });
+        setRailDraft(null);
+        if (level === "item") {
+          setExpandL2Target({ l1: displayName, l2: "New column" });
+        }
+        setScrollTreeToL1(displayName);
+      } else if (level === "column") {
+        setNavTree((prev) =>
+          addL2Child(prev, parentL1, {
+            label: displayName,
+            l3s: [],
+            ...(navType ? { navType } : {}),
+            ...(linkTrim !== "" ? { navLink: linkTrim } : {}),
+          })
+        );
+        setSelection({ kind: "l2", l1: parentL1, l2: displayName });
+        setRailDraft(null);
+        setExpandL2Target({ l1: parentL1, l2: displayName });
+      } else {
+        let colName;
+        setNavTree((prev) => {
+          const block = prev.find((b) => b.label === parentL1);
+          const existing = block?.l2s.map((l) => l.label) ?? [];
+          colName = uniqueAmong("New column", existing);
+          return addL2Child(prev, parentL1, { label: colName, l3s: [displayName] });
+        });
+        setSelection({ kind: "l3", l1: parentL1, l2: colName, l3: displayName });
+        setRailDraft(null);
+        setExpandL2Target({ l1: parentL1, l2: colName });
+      }
+      setAddNavModal({ open: false, parentL1: null, parentL2: null });
+      setDirty(true);
+    },
+    []
+  );
+
   return (
     <div className={`app app--layout-${layoutVariant}`}>
       <Sidebar />
@@ -232,6 +354,10 @@ export default function App() {
               layoutVariant={layoutVariant}
               expandL2Target={expandL2Target}
               onExpandL2Consumed={onExpandL2Consumed}
+              onAddSection={() => openAddNavModal(null)}
+              scrollToL1Label={scrollTreeToL1}
+              onScrollToL1Consumed={onScrollTreeToL1Consumed}
+              onRequestDelete={openDeleteModal}
             />
           </div>
           <RightRail
@@ -246,9 +372,24 @@ export default function App() {
             onRequestAddL3={onRequestAddL3}
             onUpdateAddL2Draft={onUpdateAddL2Draft}
             onUpdateAddL3Draft={onUpdateAddL3Draft}
+            onOpenAddNavModal={openAddNavModal}
           />
         </div>
       </div>
+      <AddL1Modal
+        open={addNavModal.open}
+        tree={navTree}
+        parentL1={addNavModal.parentL1}
+        parentL2={addNavModal.parentL2}
+        onClose={() => setAddNavModal({ open: false, parentL1: null, parentL2: null })}
+        onConfirm={onConfirmAddNav}
+      />
+      <ConfirmDeleteModal
+        open={deleteModal != null}
+        kind={deleteModal?.kind ?? null}
+        onClose={closeDeleteModal}
+        onConfirm={onConfirmDelete}
+      />
     </div>
   );
 }

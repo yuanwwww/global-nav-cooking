@@ -18,12 +18,16 @@
   --signal-accent-hover: #244f8c;
   /* Prominent tree + list selection (utility focus blue) */
   --signal-selected: #458fff;
+  /* Figma Signal/Negative — validation, errors */
+  --signal-negative: #bc0216;
   --stroke-primary: #c7c7c7;
   --stroke-secondary: #dfdfdf;
   --stroke-subtle: #dfdfdf;
   --stroke-default: #c7c7c7;
   --stroke-strong: #8b8b8b;
   --utility-focus: #458fff;
+  /* Tree row selection fill (L1 / L2 / L3) */
+  --tree-selection-bg: #e5f4ff;
   --shadow-pop: 0 4px 16px rgba(18, 18, 18, 0.14);
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -205,20 +209,27 @@ button {
 }
 
 .topbar {
-  flex: 0 0 var(--topbar-height);
+  flex: 0 0 auto;
+  min-height: var(--topbar-height);
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
+  flex-wrap: wrap;
+  row-gap: 8px;
+  column-gap: var(--space-lg);
   padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-lg);
   background: var(--background-secondary);
   border-bottom: 1px solid var(--stroke-secondary);
   box-sizing: border-box;
+  /* .app uses overflow:hidden; a single-row flex topbar could clip Preview / Publish when
+     breadcrumb + actions exceed the main column width. Wrapping keeps controls reachable. */
+  align-content: center;
 }
 
 .topbar__center {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   min-width: 0;
 }
 
@@ -304,6 +315,7 @@ button {
 .btn--preview-chip {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   border: none;
   background: var(--background-tertiary);
   color: var(--content-primary);
@@ -336,7 +348,9 @@ button {
   font-weight: 500;
 }
 
-.breadcrumb__text--current {
+/* Current crumb: modifier + aria fallback so emphasis survives if --current is dropped */
+.breadcrumb__text--current,
+.breadcrumb__text[aria-current="page"] {
   color: var(--content-primary);
   font-weight: 600;
 }
@@ -733,13 +747,50 @@ button {
   width: 100%;
 }
 
+/* Figma 650:45414 — reorder L1: CTAs + hint above elevated board */
+.tree-panel__sort-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.tree-panel__sort-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.tree-panel__sort-hint {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--content-placeholder);
+  text-align: right;
+}
+
+.btn--tree-sort-cancel {
+  border: none;
+  background: var(--background-tertiary);
+  color: var(--content-primary);
+}
+
+.btn--tree-sort-cancel:hover {
+  background: var(--stroke-secondary);
+}
+
 /* Figma 650:45414 — all L1s / sort */
 .tree-panel__l1-sort-board {
   width: 100%;
   box-sizing: border-box;
   background: var(--background-secondary);
-  border: 1px solid var(--stroke-primary);
+  border: 1px solid var(--stroke-secondary);
   border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   padding: var(--space-xl);
   display: flex;
   flex-direction: column;
@@ -757,36 +808,79 @@ button {
   border: 1px solid var(--stroke-primary);
   border-radius: var(--radius-sm);
   width: 100%;
-  cursor: grab;
+  cursor: default;
   user-select: none;
-}
-
-.tree-panel__l1-sort-row:active {
-  cursor: grabbing;
-}
-
-.tree-panel__l1-sort-row--dragging {
-  opacity: 0.5;
-  cursor: grabbing;
-}
-
-.tree-panel__l1-sort-row--over {
-  outline: 2px solid var(--utility-focus);
-  outline-offset: 2px;
 }
 
 .tree-panel__l1-sort-drag {
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  color: var(--content-placeholder);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--content-placeholder);
+  cursor: grab;
+  touch-action: none;
 }
 
 .tree-panel__l1-sort-drag svg {
   display: block;
+}
+
+.tree-panel__l1-sort-drag:active {
+  cursor: grabbing;
+}
+
+.tree-panel__l1-sort-row--dragging .tree-panel__l1-sort-drag {
+  cursor: grabbing;
+}
+
+.tree-panel__l1-sort-delete {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--signal-accent);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.tree-panel__l1-sort-delete:hover:not(:disabled) {
+  background: rgba(43, 97, 170, 0.08);
+  color: var(--signal-accent-hover);
+}
+
+.tree-panel__l1-sort-delete:focus-visible {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
+}
+
+.tree-panel__l1-sort-delete:disabled {
+  color: var(--stroke-strong);
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tree-panel__l1-sort-delete__icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.tree-panel__l1-sort-row--dragging {
+  opacity: 0.5;
+}
+
+.tree-panel__l1-sort-row--over {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
 }
 
 .tree-panel__l1-sort-text {
@@ -809,20 +903,6 @@ button {
   font-size: 14px;
   line-height: 18px;
   color: var(--content-secondary);
-}
-
-.tree-panel__l1-sort-chevron {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  color: var(--content-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tree-panel__l1-sort-chevron svg {
-  display: block;
 }
 
 .btn--tree-toolbar {
@@ -915,6 +995,84 @@ button {
   white-space: nowrap;
 }
 
+.tree-row__validation-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--signal-negative);
+}
+
+.tree-row__validation-icon__svg {
+  display: block;
+}
+
+/* Figma “states” — nav item_L1/L2/L3: hover fill + delete on hover; selection = #e5f4ff + 4px accent rail */
+.app--layout-b .tree-l1:hover:not(.is-selected) {
+  background: var(--background-secondary);
+}
+
+/* Delete (trash) — matches Figma hover affordance; no-op in prototype */
+.tree-row__delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--content-primary);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.tree-row__delete__icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.tree-row__delete:focus-visible {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.tree-row__delete:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.app--layout-b .tree-l1:hover:not(.is-selected) .tree-row__delete--l1:not(:disabled),
+.app--layout-b .tree-l1:focus-within:not(.is-selected) .tree-row__delete--l1:not(:disabled) {
+  opacity: 1;
+}
+
+.app--layout-b .accordion-header:hover .tree-row__delete--l2,
+.app--layout-b .accordion-header:focus-within .tree-row__delete--l2 {
+  opacity: 1;
+}
+
+.app--layout-b .tree-l3:hover .tree-row__delete--l3,
+.app--layout-b .tree-l3:focus-within .tree-row__delete--l3 {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .app--layout-b .tree-row__delete--l1,
+  .app--layout-b .tree-row__delete--l2,
+  .app--layout-b .tree-row__delete--l3 {
+    opacity: 1;
+  }
+}
+
 .tree-l2 {
   margin: 0;
   background: var(--background-primary);
@@ -926,6 +1084,104 @@ button {
 
 .tree-l3.tree-l3--drop-hover {
   box-shadow: inset 0 0 0 1px var(--utility-focus, #4a90d9);
+}
+
+/* Figma 770:30983 — floating “nav item_L2” chip shown under cursor while dragging */
+.tree-drag-ghost {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  z-index: 99999;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  width: min(400px, 92vw);
+  max-width: 542px;
+  background: var(--background-secondary);
+  color: var(--content-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  font-family: inherit;
+  pointer-events: none;
+}
+
+.tree-drag-ghost__grip {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--content-placeholder);
+}
+
+.tree-drag-ghost__grip svg {
+  display: block;
+}
+
+.tree-drag-ghost__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tree-drag-ghost__chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--content-secondary);
+}
+
+.tree-drag-ghost__chevron svg {
+  display: block;
+}
+
+.tree-drag-ghost__spacer {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.tree-drag-ghost__label {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tree-drag-ghost__label--l3 {
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.tree-drag-ghost__label--l1 {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 18px;
+}
+
+.tree-drag-ghost__overflow {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--content-primary);
+}
+
+.tree-drag-ghost__overflow svg {
+  display: block;
 }
 
 /* big tree item_L2 — 16px leading spacer, 16px chevron, gap 8, Semibold 14/14, py 8 px 16 */
@@ -950,21 +1206,21 @@ button {
   box-sizing: border-box;
 }
 
-/* L2 / L3 drag grip — show only when hovering the handle strip (not the whole row), so select / chevron / link stay distinct */
+/* L2 / L3 drag grip — hidden until row hover (handle-only :hover fails with opacity:0: nothing to aim at). Row click still excludes handle in JS. */
 .tree-row__drag-handle {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  min-width: 32px;
+  min-width: 20px;
   min-height: 32px;
   margin: -4px 0 -4px -6px;
   padding: 0 4px 0 6px;
   color: var(--content-placeholder);
   opacity: 0;
   transition: opacity 0.12s ease;
-  /* Let clicks pass through to the row until the handle is hovered (avoids invisible hit-box stealing L2 selection) */
-  pointer-events: none;
+  /* Must receive pointer events so :hover can reveal the grip; row click uses header delegation + exclude handle */
+  pointer-events: auto;
   cursor: grab;
   box-sizing: border-box;
 }
@@ -979,30 +1235,33 @@ button {
   height: 16px;
 }
 
-/* Visibility only on hover over the handle strip — never tied to .is-selected */
+/* Reveal when hovering anywhere on the row (parent :hover), not only the invisible handle */
+.accordion-header:hover .tree-row__drag-handle--l2,
+.accordion-header:focus-within .tree-row__drag-handle--l2,
+.tree-l3:hover .tree-row__drag-handle--l3,
+.tree-l3:focus-within .tree-row__drag-handle--l3 {
+  opacity: 1;
+}
+
 .tree-row__drag-handle--l2:hover,
 .tree-row__drag-handle--l3:hover {
   opacity: 1;
-  pointer-events: auto;
 }
 
-.tree-row__drag-handle--l2:active,
-.tree-row__drag-handle--l3:active {
-  pointer-events: auto;
-}
-
-/* Selected row: icon color when hovering the handle only (not when merely selected) */
-.accordion-header.is-selected .tree-row__drag-handle--l2:hover {
-  color: var(--content-inverse);
-}
-
-.tree-l3.is-selected .tree-row__drag-handle--l3:hover {
-  color: var(--content-inverse);
-}
-
-.app--layout-b .accordion-header.is-selected .tree-row__drag-handle--l2:hover,
-.app--layout-b .tree-l3.is-selected .tree-row__drag-handle--l3:hover {
+/* Selected row: grip visible on light selection fill */
+.accordion-header.is-selected:hover .tree-row__drag-handle--l2,
+.accordion-header.is-selected:focus-within .tree-row__drag-handle--l2,
+.tree-l3.is-selected:hover .tree-row__drag-handle--l3,
+.tree-l3.is-selected:focus-within .tree-row__drag-handle--l3 {
   color: var(--content-placeholder);
+}
+
+/* Touch / coarse pointers: no hover — keep grips visible */
+@media (hover: none) {
+  .tree-row__drag-handle--l2,
+  .tree-row__drag-handle--l3 {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1086,9 +1345,22 @@ button.tree-l2__title:focus-visible {
   margin-top: -1px;
 }
 
-.tree-l2__title {
+.tree-l2__title-group {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tree-l2__title-group .tree-l2__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+button.tree-l2__title .tree-l2__title-text {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1106,13 +1378,13 @@ button.tree-l2__title:focus-visible {
   display: none;
 }
 
-/* big tree item_L3 — 32px leading column (icon), gap 8, px 16 py 8, Medium 14/18 */
+/* Figma nav item_L3 — py 4 px 16, 40px indent, Medium 14/18, row height 28 */
 .tree-l3 {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 34px;
-  padding: 8px 16px;
+  min-height: 28px;
+  padding: 4px 16px;
   margin: 0;
   border-radius: 0;
   font-size: 14px;
@@ -1122,6 +1394,7 @@ button.tree-l2__title:focus-visible {
   position: relative;
   text-decoration: none;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .tree-l3:hover {
@@ -1129,7 +1402,7 @@ button.tree-l2__title:focus-visible {
 }
 
 .tree-l3__spacer {
-  width: 32px;
+  width: 40px;
   flex-shrink: 0;
 }
 
@@ -1189,48 +1462,48 @@ button.tree-l2__title:focus-visible {
   flex-shrink: 0;
 }
 
-/* Selected tree rows — solid bar, white type (Figma) */
+/* Selected tree rows — L1 / L2 / L3 (same fill) */
 .tree-l1.is-selected,
 .tree-l3.is-selected {
-  background: var(--signal-selected);
-  color: var(--content-inverse);
+  background: var(--tree-selection-bg);
+  color: var(--content-primary);
 }
 
 .tree-l1.is-selected .tree-overflow {
-  color: var(--content-inverse);
-  opacity: 1;
+  color: var(--content-primary);
+  opacity: 0.9;
 }
 
 .tree-l3.is-selected .tree-l3__icon,
 .tree-l3.is-selected .tree-l3__link-icon {
-  color: var(--content-inverse);
+  color: var(--signal-accent);
 }
 
 .accordion-header.is-selected {
-  background: var(--signal-selected);
-  color: var(--content-inverse);
+  background: var(--tree-selection-bg);
+  color: var(--content-primary);
 }
 
 .accordion-header.is-selected .accordion-header__chevron,
 .accordion-header.is-selected .accordion-header__chevron-btn {
-  color: var(--content-inverse);
+  color: var(--content-secondary);
 }
 
 .accordion-header.is-selected .tree-l2__title {
-  color: var(--content-inverse);
+  color: var(--content-primary);
 }
 
 .accordion-header.is-selected .tree-overflow {
-  color: var(--content-inverse);
-  opacity: 1;
+  color: var(--content-primary);
+  opacity: 0.9;
 }
 
-/* Layout B — selection reads against white cards: calm fill + accent rail (Figma rest-state family) */
+/* Layout B — selection: light fill + 4px accent rail (Figma Signal/Accent) */
 .app--layout-b .tree-l1.is-selected,
 .app--layout-b .tree-l3.is-selected {
-  background: var(--background-secondary);
+  background: var(--tree-selection-bg);
   color: var(--content-primary);
-  box-shadow: inset 3px 0 0 var(--signal-accent);
+  box-shadow: inset 4px 0 0 var(--signal-accent);
 }
 
 .app--layout-b .tree-l1.is-selected .tree-overflow {
@@ -1244,14 +1517,14 @@ button.tree-l2__title:focus-visible {
 }
 
 .app--layout-b .accordion-header.is-selected {
-  background: var(--background-secondary);
+  background: var(--tree-selection-bg);
   color: var(--content-primary);
-  box-shadow: inset 3px 0 0 var(--signal-accent);
+  box-shadow: inset 4px 0 0 var(--signal-accent);
 }
 
 .app--layout-b .accordion-header.is-selected .accordion-header__chevron,
 .app--layout-b .accordion-header.is-selected .accordion-header__chevron-btn {
-  color: var(--content-secondary);
+  color: var(--signal-accent);
 }
 
 .app--layout-b .accordion-header.is-selected .tree-l2__title {
@@ -1267,8 +1540,29 @@ button.tree-l2__title:focus-visible {
   background: var(--background-secondary);
 }
 
+.app--layout-b .accordion-header.is-selected:hover {
+  background: var(--tree-selection-bg);
+}
+
 .app--layout-b .tree-l3:hover:not(.is-selected) {
   background: var(--background-secondary);
+}
+
+.app--layout-b .tree-l3.is-selected:hover {
+  background: var(--tree-selection-bg);
+}
+
+.app--layout-b .tree-l1.is-selected:hover {
+  background: var(--tree-selection-bg);
+}
+
+.tree-l3:focus {
+  outline: none;
+}
+
+.tree-l3:focus-visible {
+  outline: 2px solid var(--utility-focus);
+  outline-offset: -2px;
 }
 
 .right-rail {
@@ -1355,6 +1649,31 @@ button.tree-l2__title:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* Figma 966:48325 — rail validation (Error icon + negative copy) */
+.rail-validation-banner {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  opacity: 0.8;
+}
+
+.rail-validation-banner__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--signal-negative);
+}
+
+.rail-validation-banner__text {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--signal-negative);
 }
 
 .rail-layout-b__add-row {
@@ -1858,6 +2177,43 @@ button.detail-l2-row__label {
   box-shadow: var(--shadow-pop);
 }
 
+/* Layout A — L1 outline lists L2 only; L2 outline lists L3. Layout B omits in JSX */
+.detail-layout-a__outline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--stroke-secondary);
+}
+
+.detail-layout-a__outline-caption {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--content-secondary);
+}
+
+.detail-layout-a__empty {
+  margin: 0;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--content-secondary);
+}
+
+.detail-l3-row--rail-only {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.detail-l3-row--rail-only:last-child {
+  margin-bottom: 0;
+}
+
 .l1-list__item.is-sortable-dragging {
   opacity: 0.6;
 }
@@ -1911,4 +2267,150 @@ button.detail-l2-row__label {
 
 .toast.is-visible {
   display: block;
+}
+
+/* Add top-level section — modal (Figma 954:19187) */
+.add-l1-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  box-sizing: border-box;
+}
+
+.add-l1-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: rgba(18, 18, 18, 0.45);
+  cursor: pointer;
+}
+
+.add-l1-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 420px);
+  max-height: min(90vh, 560px);
+  overflow: auto;
+  background: var(--surface-raised);
+  border: 1px solid var(--stroke-secondary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  flex-direction: column;
+}
+
+.add-l1-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--stroke-secondary);
+}
+
+.add-l1-modal__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  color: var(--content-primary);
+}
+
+.add-l1-modal__close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--content-secondary);
+  cursor: pointer;
+}
+
+.add-l1-modal__close:hover {
+  background: var(--background-tertiary);
+  color: var(--content-primary);
+}
+
+.add-l1-modal__body {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.add-l1-modal__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--stroke-secondary);
+}
+
+.add-l1-modal__footer .btn--primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Confirm delete — Figma 891:38816 */
+.confirm-delete-modal.add-l1-modal {
+  z-index: 450;
+}
+
+.confirm-delete-modal .add-l1-modal__backdrop {
+  background: rgba(18, 18, 18, 0.6);
+}
+
+.confirm-delete-modal__panel.add-l1-modal__panel {
+  width: min(100%, 375px);
+  max-height: none;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.24);
+  border: none;
+  padding: var(--space-xl);
+  gap: var(--space-xl);
+}
+
+.confirm-delete-modal__header.add-l1-modal__header {
+  padding: 0 0 var(--space-md);
+  border-bottom: 1px solid var(--stroke-secondary);
+  align-items: flex-start;
+}
+
+.confirm-delete-modal__title.add-l1-modal__title {
+  font-size: 16px;
+  line-height: 18px;
+  font-weight: 700;
+  padding-right: var(--space-xl);
+}
+
+.confirm-delete-modal__message {
+  padding: 0;
+}
+
+.confirm-delete-modal__text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--content-primary);
+}
+
+.confirm-delete-modal__footer.add-l1-modal__footer {
+  margin-top: 0;
+  padding: 0;
+  border-top: none;
 }
