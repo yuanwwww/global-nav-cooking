@@ -1,5 +1,7 @@
 /** Immutable nav tree edits */
 
+import { NAV_TYPE_PLAIN_TEXT } from "./navTypes.js";
+
 /** @param {string | { label: string; navType?: string; navLink?: string }} l3 */
 export function l3Label(l3) {
   if (l3 == null) return "";
@@ -9,6 +11,9 @@ export function l3Label(l3) {
 function normalizeL3Object(entry) {
   const label = entry.label ?? "Untitled";
   const navType = entry.navType ?? "collection";
+  if (navType === NAV_TYPE_PLAIN_TEXT) {
+    return { label, navType: NAV_TYPE_PLAIN_TEXT };
+  }
   const navLink = typeof entry.navLink === "string" ? entry.navLink.trim() : "";
   return {
     label,
@@ -34,6 +39,13 @@ export function removeL1Block(tree, l1Label) {
 export function createNewL1Block(label, level, meta = {}) {
   const navType = meta.navType ?? "collection";
   const navLink = typeof meta.navLink === "string" ? meta.navLink.trim() : "";
+  if (navType === NAV_TYPE_PLAIN_TEXT) {
+    const base = { label, navType: NAV_TYPE_PLAIN_TEXT };
+    if (level === "item") {
+      return { ...base, l2s: [{ label: "New column", l3s: [] }] };
+    }
+    return { ...base, l2s: [] };
+  }
   const base = {
     label,
     navType,
@@ -161,4 +173,107 @@ export function uniqueAmong(base, existing) {
   let n = 2;
   while (existing.includes(`${trimmed} (${n})`)) n += 1;
   return `${trimmed} (${n})`;
+}
+
+/**
+ * @param {string} l1Label
+ * @param {{ displayName: string; navType: string; navLink: string }} fields
+ */
+export function updateL1Block(tree, l1Label, { displayName, navType, navLink }) {
+  const otherL1 = tree.map((b) => b.label).filter((l) => l !== l1Label);
+  const finalName = uniqueAmong((displayName || "").trim() || "Untitled", otherL1);
+  const linkTrim = typeof navLink === "string" ? navLink.trim() : "";
+  const newTree = tree.map((b) => {
+    if (b.label !== l1Label) return b;
+    const resolvedNavType = navType ?? b.navType ?? "collection";
+    let next = {
+      ...b,
+      label: finalName,
+      navType: resolvedNavType,
+    };
+    if (resolvedNavType === NAV_TYPE_PLAIN_TEXT) {
+      const { navLink: _r, ...rest } = next;
+      next = rest;
+    } else if (linkTrim === "") {
+      const { navLink: _n, ...rest } = next;
+      next = rest;
+    } else {
+      next = { ...next, navLink: linkTrim };
+    }
+    return next;
+  });
+  return { tree: newTree, resolved: { l1: finalName } };
+}
+
+/**
+ * @param {{ displayName: string; navLink: string }} fields
+ */
+export function updateL2Entry(tree, l1Label, l2Label, { displayName, navLink }) {
+  let finalL2 = l2Label;
+  const newTree = tree.map((b) => {
+    if (b.label !== l1Label) return b;
+    const siblings = b.l2s.map((l) => l.label).filter((x) => x !== l2Label);
+    return {
+      ...b,
+      l2s: b.l2s.map((l2) => {
+        if (l2.label !== l2Label) return l2;
+        finalL2 = uniqueAmong((displayName || "").trim() || "Untitled", siblings);
+        const linkTrim = typeof navLink === "string" ? navLink.trim() : "";
+        let next = { ...l2, label: finalL2 };
+        if (linkTrim === "") {
+          const { navLink: _n, ...rest } = next;
+          next = rest;
+        } else {
+          next = { ...next, navLink: linkTrim };
+        }
+        return next;
+      }),
+    };
+  });
+  return { tree: newTree, resolved: { l1: l1Label, l2: finalL2 } };
+}
+
+function ensureL3Object(x) {
+  if (x == null) return { label: "Untitled", navType: "link" };
+  if (typeof x === "string") return { label: x, navType: "link" };
+  return { ...x, label: x.label ?? "Untitled" };
+}
+
+/**
+ * @param {string} oldL3Label
+ * @param {{ displayName: string; navType: string; navLink: string }} fields
+ */
+export function updateL3Entry(tree, l1Label, l2Label, oldL3Label, { displayName, navType, navLink }) {
+  let finalL3 = oldL3Label;
+  const newTree = tree.map((b) => {
+    if (b.label !== l1Label) return b;
+    return {
+      ...b,
+      l2s: b.l2s.map((l2) => {
+        if (l2.label !== l2Label) return l2;
+        const taken = (l2.l3s ?? []).map((x) => l3Label(x)).filter((s) => s !== oldL3Label);
+        return {
+          ...l2,
+          l3s: l2.l3s.map((x) => {
+            if (l3Label(x) !== oldL3Label) return x;
+            finalL3 = uniqueAmong((displayName || "").trim() || "Untitled", taken);
+            const linkTrim = typeof navLink === "string" ? navLink.trim() : "";
+            const resolvedType = navType ?? "collection";
+            if (resolvedType === NAV_TYPE_PLAIN_TEXT) {
+              return { label: finalL3, navType: NAV_TYPE_PLAIN_TEXT };
+            }
+            let o = { ...ensureL3Object(x), label: finalL3, navType: resolvedType };
+            if (linkTrim === "") {
+              const { navLink: _n, ...rest } = o;
+              o = rest;
+            } else {
+              o = { ...o, navLink: linkTrim };
+            }
+            return o;
+          }),
+        };
+      }),
+    };
+  });
+  return { tree: newTree, resolved: { l1: l1Label, l2: l2Label, l3: finalL3 } };
 }

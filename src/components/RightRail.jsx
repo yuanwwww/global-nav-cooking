@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { l3Label } from "../data/treeMutations.js";
 import { l1HasAtLeastOneLink, l2HasAtLeastOneLink } from "../navValidation.js";
+import { NAV_TYPE_PLAIN_TEXT, isNavTypeWithLink } from "../data/navTypes.js";
 import { IconEdit, IconErrorWarning, IconTrash } from "./RailIcons.jsx";
 
 function getBlock(tree, l1) {
@@ -49,6 +50,7 @@ function RailHeaderDetail({ title, titleSize, showClose, onClose }) {
 }
 
 const DRAFT_NAME_DEBOUNCE_MS = 320;
+const DETAIL_DEBOUNCE_MS = 320;
 
 const L1ListDragDots = () => (
   <span className="l1-list__drag" aria-hidden="true" draggable={false}>
@@ -415,6 +417,334 @@ function RailLayoutANestedL2({ l2, l1, l2Label, onSelect }) {
   );
 }
 
+function RailL1Column({
+  block,
+  l1,
+  l1Invalid,
+  layoutVariant,
+  onUpdate,
+  onSelect,
+  onOpenAddNavModal,
+  showClose,
+  onClose,
+  formKey,
+}) {
+  const [displayName, setDisplayName] = useState(l1);
+  const [navType, setNavType] = useState(block?.navType ?? "collection");
+  const [navLink, setNavLink] = useState(block?.navLink ?? "");
+  const snapshot = useRef({ displayName, navType, navLink });
+  snapshot.current = { displayName, navType, navLink };
+  const debounceRef = useRef(null);
+  const skipFirstDebounce = useRef(true);
+
+  useEffect(() => {
+    setDisplayName(l1);
+    setNavType(block?.navType ?? "collection");
+    setNavLink(block?.navLink ?? "");
+    skipFirstDebounce.current = true;
+  }, [l1, block?.navType, block?.navLink, block?.label]);
+
+  useEffect(() => {
+    if (navType === NAV_TYPE_PLAIN_TEXT) setNavLink("");
+  }, [navType]);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      if (skipFirstDebounce.current) {
+        skipFirstDebounce.current = false;
+        return;
+      }
+      onUpdate(snapshot.current);
+    }, DETAIL_DEBOUNCE_MS);
+    return () => clearTimeout(debounceRef.current);
+  }, [displayName, navType, navLink, onUpdate]);
+
+  return (
+    <>
+      <div className="right-rail__header">
+        <RailHeaderDetail
+          title={displayName}
+          titleSize="xl"
+          showClose={showClose}
+          onClose={onClose}
+        />
+      </div>
+      <div className="right-rail__body">
+        <div className="rail-panel is-active">
+          <div className="rail-layout-b__form">
+            {l1Invalid ? (
+              <RailValidationBanner message="Sections must contain at least one link, either at the section, column, or item level." />
+            ) : null}
+            <div className="rail-layout-b__add-row">
+              <button
+                type="button"
+                className="btn btn--secondary btn--signal-outline"
+                onClick={() => onOpenAddNavModal?.(l1)}
+              >
+                Add link
+              </button>
+            </div>
+            <form className="detail-stack" key={formKey} onSubmit={(e) => e.preventDefault()}>
+              <div className="field-group">
+                <label className="field-label" htmlFor={`field-l1-display-${formKey}`}>
+                  Display name<span className="field-label__req">*</span>
+                </label>
+                <input
+                  id={`field-l1-display-${formKey}`}
+                  type="text"
+                  className="field-input"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="field-group">
+                <label className="field-label" htmlFor={`field-l1-type-${formKey}`}>
+                  Type<span className="field-label__req">*</span>
+                </label>
+                <select
+                  id={`field-l1-type-${formKey}`}
+                  className="field-select"
+                  value={navType}
+                  onChange={(e) => setNavType(e.target.value)}
+                >
+                  <option value="collection">Collection</option>
+                  <option value="super-collection">Super collection</option>
+                  <option value="link">Link</option>
+                  <option value={NAV_TYPE_PLAIN_TEXT}>Plain text</option>
+                </select>
+              </div>
+              {isNavTypeWithLink(navType) ? (
+                <div className="field-group">
+                  <label className="field-label" htmlFor={`field-l1-link-${formKey}`}>
+                    Link<span className="field-label__req">*</span>
+                  </label>
+                  <input
+                    id={`field-l1-link-${formKey}`}
+                    type="text"
+                    className="field-input"
+                    value={navLink}
+                    onChange={(e) => setNavLink(e.target.value)}
+                    placeholder="/cooking/…"
+                    autoComplete="off"
+                  />
+                </div>
+              ) : null}
+            </form>
+            {layoutVariant === "a" ? <RailLayoutANestedL1 block={block} l1={l1} onSelect={onSelect} /> : null}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function RailL2Column({
+  l1,
+  l2,
+  l2Node,
+  l2Invalid,
+  layoutVariant,
+  onUpdate,
+  onSelect,
+  onOpenAddNavModal,
+  formKey,
+  showClose,
+  onClose,
+}) {
+  const [displayName, setDisplayName] = useState(l2);
+  const [navLink, setNavLink] = useState(l2Node?.navLink ?? "");
+  const snapshot = useRef({ displayName, navLink });
+  snapshot.current = { displayName, navLink };
+  const debounceRef = useRef(null);
+  const skipFirstDebounce = useRef(true);
+
+  useEffect(() => {
+    setDisplayName(l2);
+    setNavLink(l2Node?.navLink ?? "");
+    skipFirstDebounce.current = true;
+  }, [l1, l2, l2Node?.navLink, l2Node?.label]);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      if (skipFirstDebounce.current) {
+        skipFirstDebounce.current = false;
+        return;
+      }
+      onUpdate(snapshot.current);
+    }, DETAIL_DEBOUNCE_MS);
+    return () => clearTimeout(debounceRef.current);
+  }, [displayName, navLink, onUpdate]);
+
+  return (
+    <>
+      <div className="right-rail__header">
+        <RailHeaderDetail title={displayName} showClose={showClose} onClose={onClose} />
+      </div>
+      <div className="right-rail__body">
+        <div className="rail-panel is-active">
+          {!l2Node ? (
+            <p className="right-rail__context">This section is not in the current tree data.</p>
+          ) : (
+            <div className="rail-layout-b__form">
+              {l2Invalid ? (
+                <RailValidationBanner message="Columns must contain at least one link, either at the column or item level." />
+              ) : null}
+              <div className="rail-layout-b__add-row">
+                <button
+                  type="button"
+                  className="btn btn--secondary btn--signal-outline"
+                  onClick={() => onOpenAddNavModal?.(l1, l2)}
+                >
+                  Add link
+                </button>
+              </div>
+              <form className="detail-stack" key={formKey} onSubmit={(e) => e.preventDefault()}>
+                <div className="field-group">
+                  <label className="field-label" htmlFor={`field-l2-display-${formKey}`}>
+                    Display name<span className="field-label__req">*</span>
+                  </label>
+                  <input
+                    id={`field-l2-display-${formKey}`}
+                    type="text"
+                    className="field-input"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    autoComplete="off"
+                  />
+                </div>
+                {l2Node?.navType !== NAV_TYPE_PLAIN_TEXT ? (
+                  <div className="field-group">
+                    <label className="field-label" htmlFor={`field-l2-slug-${formKey}`}>
+                      Link<span className="field-label__req">*</span>
+                    </label>
+                    <input
+                      id={`field-l2-slug-${formKey}`}
+                      type="text"
+                      className="field-input"
+                      value={navLink}
+                      onChange={(e) => setNavLink(e.target.value)}
+                      placeholder="/cooking/…"
+                      autoComplete="off"
+                    />
+                  </div>
+                ) : null}
+              </form>
+              {layoutVariant === "a" ? (
+                <RailLayoutANestedL2 l2={l2Node} l1={l1} l2Label={l2} onSelect={onSelect} />
+              ) : null}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function RailL3Column({ l1, l2, l3, l3Entry, l3Exists, onUpdate, formKey, showClose, onClose }) {
+  const [displayName, setDisplayName] = useState(l3);
+  const [navType, setNavType] = useState(
+    typeof l3Entry === "object" && l3Entry != null ? l3Entry.navType ?? "collection" : "link"
+  );
+  const [navLink, setNavLink] = useState(
+    typeof l3Entry === "object" && l3Entry != null ? l3Entry.navLink ?? "" : ""
+  );
+  const snapshot = useRef({ displayName, navType, navLink });
+  snapshot.current = { displayName, navType, navLink };
+  const debounceRef = useRef(null);
+  const skipFirstDebounce = useRef(true);
+
+  useEffect(() => {
+    setDisplayName(l3);
+    setNavType(
+      typeof l3Entry === "object" && l3Entry != null ? l3Entry.navType ?? "collection" : "link"
+    );
+    setNavLink(typeof l3Entry === "object" && l3Entry != null ? l3Entry.navLink ?? "" : "");
+    skipFirstDebounce.current = true;
+  }, [l1, l2, l3, l3Entry]);
+
+  useEffect(() => {
+    if (navType === NAV_TYPE_PLAIN_TEXT) setNavLink("");
+  }, [navType]);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      if (skipFirstDebounce.current) {
+        skipFirstDebounce.current = false;
+        return;
+      }
+      onUpdate(snapshot.current);
+    }, DETAIL_DEBOUNCE_MS);
+    return () => clearTimeout(debounceRef.current);
+  }, [displayName, navType, navLink, onUpdate]);
+
+  return (
+    <>
+      <div className="right-rail__header">
+        <RailHeaderDetail title={displayName} showClose={showClose} onClose={onClose} />
+      </div>
+      <div className="right-rail__body">
+        <div className="rail-panel is-active">
+          {!l3Exists ? (
+            <p className="right-rail__context">This link is not in the current tree data.</p>
+          ) : (
+            <form className="detail-stack" key={formKey} onSubmit={(e) => e.preventDefault()}>
+              <div className="field-group">
+                <label className="field-label" htmlFor={`field-display-${formKey}`}>
+                  Display name<span className="field-label__req">*</span>
+                </label>
+                <input
+                  id={`field-display-${formKey}`}
+                  type="text"
+                  className="field-input"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="field-group">
+                <label className="field-label" htmlFor={`field-type-${formKey}`}>
+                  Type<span className="field-label__req">*</span>
+                </label>
+                <select
+                  id={`field-type-${formKey}`}
+                  className="field-select"
+                  value={navType}
+                  onChange={(e) => setNavType(e.target.value)}
+                >
+                  <option value="collection">Collection</option>
+                  <option value="super-collection">Super collection</option>
+                  <option value="link">Link</option>
+                  <option value={NAV_TYPE_PLAIN_TEXT}>Plain text</option>
+                </select>
+              </div>
+              {isNavTypeWithLink(navType) ? (
+                <div className="field-group">
+                  <label className="field-label" htmlFor={`field-link-${formKey}`}>
+                    Link<span className="field-label__req">*</span>
+                  </label>
+                  <input
+                    id={`field-link-${formKey}`}
+                    type="url"
+                    className="field-input"
+                    value={navLink}
+                    onChange={(e) => setNavLink(e.target.value)}
+                    placeholder="https://"
+                    autoComplete="off"
+                  />
+                </div>
+              ) : null}
+            </form>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
 /** Tree-driven detail: full IA stays in the tree; rail shows L1/L2/L3 forms */
 function TreeSelectionDetail({
   tree,
@@ -428,6 +758,9 @@ function TreeSelectionDetail({
   onRequestAddL3,
   onUpdateAddL2Draft,
   onUpdateAddL3Draft,
+  onUpdateL1Detail,
+  onUpdateL2Detail,
+  onUpdateL3Detail,
   onOpenAddNavModal,
 }) {
   const block = selection ? getBlock(tree, selection.l1) : null;
@@ -478,78 +811,18 @@ function TreeSelectionDetail({
     const formKey = `l1-${selection.l1}`;
     const l1Invalid = block != null && !l1HasAtLeastOneLink(block);
     return (
-      <>
-        <div className="right-rail__header">
-          <RailHeaderDetail
-            title={selection.l1}
-            titleSize="xl"
-            showClose={showCloseLayoutB}
-            onClose={onCloseRail}
-          />
-        </div>
-        <div className="right-rail__body">
-          <div className="rail-panel is-active">
-            <div className="rail-layout-b__form">
-              {l1Invalid ? (
-                <RailValidationBanner message="Sections must contain at least one link, either at the section, column, or item level." />
-              ) : null}
-              <div className="rail-layout-b__add-row">
-                <button
-                  type="button"
-                  className="btn btn--secondary btn--signal-outline"
-                  onClick={() => onOpenAddNavModal?.(selection.l1)}
-                >
-                  Add link
-                </button>
-              </div>
-              <form className="detail-stack" key={formKey} onSubmit={(e) => e.preventDefault()}>
-                <div className="field-group">
-                  <label className="field-label" htmlFor={`field-l1-display-${formKey}`}>
-                    Display name<span className="field-label__req">*</span>
-                  </label>
-                  <input
-                    id={`field-l1-display-${formKey}`}
-                    type="text"
-                    className="field-input"
-                    defaultValue={selection.l1}
-                    autoComplete="off"
-                  />
-                </div>
-                <div className="field-group">
-                  <label className="field-label" htmlFor={`field-l1-type-${formKey}`}>
-                    Type
-                  </label>
-                  <select
-                    id={`field-l1-type-${formKey}`}
-                    className="field-select"
-                    defaultValue={block?.navType ?? "collection"}
-                  >
-                    <option value="collection">Collection</option>
-                    <option value="super-collection">Super collection</option>
-                    <option value="link">Link</option>
-                  </select>
-                </div>
-                <div className="field-group">
-                  <label className="field-label" htmlFor={`field-l1-link-${formKey}`}>
-                    Link
-                  </label>
-                  <input
-                    id={`field-l1-link-${formKey}`}
-                    type="text"
-                    className="field-input"
-                    defaultValue={block?.navLink ?? ""}
-                    placeholder="/cooking/…"
-                    autoComplete="off"
-                  />
-                </div>
-              </form>
-              {layoutVariant === "a" ? (
-                <RailLayoutANestedL1 block={block} l1={selection.l1} onSelect={onSelect} />
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </>
+      <RailL1Column
+        formKey={formKey}
+        block={block}
+        l1={selection.l1}
+        l1Invalid={l1Invalid}
+        layoutVariant={layoutVariant}
+        onUpdate={onUpdateL1Detail}
+        onSelect={onSelect}
+        onOpenAddNavModal={onOpenAddNavModal}
+        showClose={showCloseLayoutB}
+        onClose={onCloseRail}
+      />
     );
   }
 
@@ -558,139 +831,39 @@ function TreeSelectionDetail({
     const formKey = `l2-${selection.l1}-${selection.l2}`;
     const l2Invalid = l2 != null && !l2HasAtLeastOneLink(l2);
     return (
-      <>
-        <div className="right-rail__header">
-          <RailHeaderDetail
-            title={selection.l2}
-            showClose={showCloseLayoutB}
-            onClose={onCloseRail}
-          />
-        </div>
-        <div className="right-rail__body">
-          <div className="rail-panel is-active">
-            {!l2 ? (
-              <p className="right-rail__context">This section is not in the current tree data.</p>
-            ) : (
-              <div className="rail-layout-b__form">
-                {l2Invalid ? (
-                  <RailValidationBanner message="Columns must contain at least one link, either at the column or item level." />
-                ) : null}
-                <div className="rail-layout-b__add-row">
-                  <button
-                    type="button"
-                    className="btn btn--secondary btn--signal-outline"
-                    onClick={() => onOpenAddNavModal?.(selection.l1, selection.l2)}
-                  >
-                    Add link
-                  </button>
-                </div>
-                <form className="detail-stack" key={formKey} onSubmit={(e) => e.preventDefault()}>
-                  <div className="field-group">
-                    <label className="field-label" htmlFor={`field-l2-display-${formKey}`}>
-                      Display name
-                    </label>
-                    <input
-                      id={`field-l2-display-${formKey}`}
-                      type="text"
-                      className="field-input"
-                      defaultValue={selection.l2}
-                      autoComplete="off"
-                    />
-                  </div>
-                  <div className="field-group">
-                    <label className="field-label" htmlFor={`field-l2-slug-${formKey}`}>
-                      Link
-                    </label>
-                    <input
-                      id={`field-l2-slug-${formKey}`}
-                      type="text"
-                      className="field-input"
-                      defaultValue={l2.navLink ?? ""}
-                      placeholder="/cooking/…"
-                      autoComplete="off"
-                    />
-                  </div>
-                </form>
-                {layoutVariant === "a" ? (
-                  <RailLayoutANestedL2
-                    l2={l2}
-                    l1={selection.l1}
-                    l2Label={selection.l2}
-                    onSelect={onSelect}
-                  />
-                ) : null}
-              </div>
-            )}
-          </div>
-        </div>
-      </>
+      <RailL2Column
+        formKey={formKey}
+        l1={selection.l1}
+        l2={selection.l2}
+        l2Node={l2}
+        l2Invalid={l2Invalid}
+        layoutVariant={layoutVariant}
+        onUpdate={onUpdateL2Detail}
+        onSelect={onSelect}
+        onOpenAddNavModal={onOpenAddNavModal}
+        showClose={showCloseLayoutB}
+        onClose={onCloseRail}
+      />
     );
   }
 
   const l2ForL3 = block ? getL2(block, selection.l2) : null;
   const l3Exists = l2ForL3?.l3s.some((x) => l3Label(x) === selection.l3);
   const l3Entry = l2ForL3?.l3s.find((x) => l3Label(x) === selection.l3);
-  const l3NavType =
-    typeof l3Entry === "object" && l3Entry != null ? l3Entry.navType ?? "collection" : "link";
-  const l3NavLink =
-    typeof l3Entry === "object" && l3Entry != null ? l3Entry.navLink ?? "" : "";
   const formKey = `${selection.l1}-${selection.l2}-${selection.l3}`;
 
   return (
-    <>
-      <div className="right-rail__header">
-        <RailHeaderDetail
-          title={selection.l3}
-          showClose={showCloseLayoutB}
-          onClose={onCloseRail}
-        />
-      </div>
-      <div className="right-rail__body">
-        <div className="rail-panel is-active">
-          {!l3Exists ? (
-            <p className="right-rail__context">This link is not in the current tree data.</p>
-          ) : (
-            <form className="detail-stack" key={formKey} onSubmit={(e) => e.preventDefault()}>
-              <div className="field-group">
-                <label className="field-label" htmlFor={`field-display-${formKey}`}>
-                  Display name
-                </label>
-                <input
-                  id={`field-display-${formKey}`}
-                  type="text"
-                  className="field-input"
-                  defaultValue={selection.l3}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="field-group">
-                <label className="field-label" htmlFor={`field-type-${formKey}`}>
-                  Type
-                </label>
-                <select id={`field-type-${formKey}`} className="field-select" defaultValue={l3NavType}>
-                  <option value="collection">Collection</option>
-                  <option value="super-collection">Super collection</option>
-                  <option value="link">Link</option>
-                </select>
-              </div>
-              <div className="field-group">
-                <label className="field-label" htmlFor={`field-link-${formKey}`}>
-                  Link
-                </label>
-                <input
-                  id={`field-link-${formKey}`}
-                  type="url"
-                  className="field-input"
-                  defaultValue={l3NavLink}
-                  placeholder="https://"
-                  autoComplete="off"
-                />
-              </div>
-            </form>
-          )}
-        </div>
-      </div>
-    </>
+    <RailL3Column
+      formKey={formKey}
+      l1={selection.l1}
+      l2={selection.l2}
+      l3={selection.l3}
+      l3Entry={l3Entry}
+      l3Exists={l3Exists}
+      onUpdate={onUpdateL3Detail}
+      showClose={showCloseLayoutB}
+      onClose={onCloseRail}
+    />
   );
 }
 
@@ -706,6 +879,9 @@ export function RightRail({
   onRequestAddL3,
   onUpdateAddL2Draft,
   onUpdateAddL3Draft,
+  onUpdateL1Detail = () => {},
+  onUpdateL2Detail = () => {},
+  onUpdateL3Detail = () => {},
   onOpenAddNavModal,
 }) {
   if (layoutVariant === "b" && selection == null) {
@@ -742,6 +918,9 @@ export function RightRail({
         onRequestAddL3={onRequestAddL3}
         onUpdateAddL2Draft={onUpdateAddL2Draft}
         onUpdateAddL3Draft={onUpdateAddL3Draft}
+        onUpdateL1Detail={onUpdateL1Detail}
+        onUpdateL2Detail={onUpdateL2Detail}
+        onUpdateL3Detail={onUpdateL3Detail}
         onOpenAddNavModal={onOpenAddNavModal}
       />
     </aside>

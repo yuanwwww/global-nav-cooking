@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 import { NAV_TREE } from "./data/treeData.js";
+import { NAV_TYPE_PLAIN_TEXT } from "./data/navTypes.js";
 import {
   addL1Block,
   addL2Child,
@@ -15,6 +16,9 @@ import {
   reorderL2Children,
   reorderL3Children,
   l3Label,
+  updateL1Block,
+  updateL2Entry,
+  updateL3Entry,
 } from "./data/treeMutations.js";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { Topbar } from "./components/Topbar.jsx";
@@ -48,6 +52,10 @@ export default function App() {
 
   const railDraftRef = useRef(null);
   railDraftRef.current = railDraft;
+  const selectionRef = useRef(null);
+  selectionRef.current = selection;
+  /** set inside setNavTree updaters; applied in useLayoutEffect so selection matches renamed labels */
+  const selectionAfterTree = useRef(null);
 
   const onSelect = useCallback((sel) => {
     setSelection(sel);
@@ -227,6 +235,71 @@ export default function App() {
 
   const onScrollTreeToL1Consumed = useCallback(() => setScrollTreeToL1(null), []);
 
+  const onUpdateL1Detail = useCallback((fields) => {
+    const s = selectionRef.current;
+    if (s?.kind !== "l1") return;
+    setNavTree((prev) => {
+      const { tree, resolved } = updateL1Block(prev, s.l1, fields);
+      selectionAfterTree.current = { t: "l1", from: s.l1, to: resolved.l1 };
+      return tree;
+    });
+    setDirty(true);
+  }, []);
+
+  const onUpdateL2Detail = useCallback((fields) => {
+    const s = selectionRef.current;
+    if (s?.kind !== "l2") return;
+    setNavTree((prev) => {
+      const { tree, resolved } = updateL2Entry(prev, s.l1, s.l2, fields);
+      selectionAfterTree.current = {
+        t: "l2",
+        l1: s.l1,
+        from: s.l2,
+        to: resolved.l2,
+      };
+      return tree;
+    });
+    setDirty(true);
+  }, []);
+
+  const onUpdateL3Detail = useCallback((fields) => {
+    const s = selectionRef.current;
+    if (s?.kind !== "l3") return;
+    setNavTree((prev) => {
+      const { tree, resolved } = updateL3Entry(prev, s.l1, s.l2, s.l3, fields);
+      selectionAfterTree.current = {
+        t: "l3",
+        l1: s.l1,
+        l2: s.l2,
+        from: s.l3,
+        to: resolved.l3,
+      };
+      return tree;
+    });
+    setDirty(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    const p = selectionAfterTree.current;
+    if (!p) return;
+    selectionAfterTree.current = null;
+    if (p.t === "l1") {
+      setSelection((cur) => (cur?.kind === "l1" && cur.l1 === p.from ? { kind: "l1", l1: p.to } : cur));
+    } else if (p.t === "l2") {
+      setSelection((cur) =>
+        cur?.kind === "l2" && cur.l1 === p.l1 && cur.l2 === p.from
+          ? { kind: "l2", l1: p.l1, l2: p.to }
+          : cur
+      );
+    } else {
+      setSelection((cur) =>
+        cur?.kind === "l3" && cur.l1 === p.l1 && cur.l2 === p.l2 && cur.l3 === p.from
+          ? { kind: "l3", l1: p.l1, l2: p.l2, l3: p.to }
+          : cur
+      );
+    }
+  }, [navTree]);
+
   const openAddNavModal = useCallback((parentL1, parentL2 = null) => {
     setAddNavModal({ open: true, parentL1, parentL2 });
   }, []);
@@ -315,11 +388,20 @@ export default function App() {
         setExpandL2Target({ l1: parentL1, l2: displayName });
       } else {
         let colName;
+        const linkTrim = typeof navLink === "string" ? navLink.trim() : "";
+        const plain = navType === NAV_TYPE_PLAIN_TEXT;
         setNavTree((prev) => {
           const block = prev.find((b) => b.label === parentL1);
           const existing = block?.l2s.map((l) => l.label) ?? [];
           colName = uniqueAmong("New column", existing);
-          return addL2Child(prev, parentL1, { label: colName, l3s: [displayName] });
+          const l3Payload = plain
+            ? { label: displayName, navType: NAV_TYPE_PLAIN_TEXT }
+            : {
+                label: displayName,
+                navType: navType || "collection",
+                ...(linkTrim !== "" ? { navLink: linkTrim } : {}),
+              };
+          return addL2Child(prev, parentL1, { label: colName, l3s: [l3Payload] });
         });
         setSelection({ kind: "l3", l1: parentL1, l2: colName, l3: displayName });
         setRailDraft(null);
@@ -372,6 +454,9 @@ export default function App() {
             onRequestAddL3={onRequestAddL3}
             onUpdateAddL2Draft={onUpdateAddL2Draft}
             onUpdateAddL3Draft={onUpdateAddL3Draft}
+            onUpdateL1Detail={onUpdateL1Detail}
+            onUpdateL2Detail={onUpdateL2Detail}
+            onUpdateL3Detail={onUpdateL3Detail}
             onOpenAddNavModal={openAddNavModal}
           />
         </div>
