@@ -1,6 +1,11 @@
 import { useState, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { uniqueAmong, l3Label } from "../data/treeMutations.js";
+import { NAV_TYPE_PLAIN_TEXT, isNavTypeWithLink } from "../data/navTypes.js";
+
+const VALID_NAV_TYPES = ["collection", "super-collection", "link", NAV_TYPE_PLAIN_TEXT];
+/** L3 added under an L2 is always navigable — no plain-text row */
+const VALID_L3_FROM_L2_TYPES = ["collection", "super-collection", "link"];
 
 function siblingLabelsForAdd(tree, parentL1, parentL2, level, showLevelSelect) {
   if (parentL1 == null) return tree.map((b) => b.label);
@@ -16,7 +21,8 @@ function siblingLabelsForAdd(tree, parentL1, parentL2, level, showLevelSelect) {
 
 /**
  * Modal for adding nav items. Top-level: `parentL1` null — L1 section (display name, type, link).
- * Under an L1 (no L2): Column (L2) vs Item (L3). Under an L2: L3 link only — no level row.
+ * Under an L1 (no L2): Column (L2) vs Item (L3). Under an L2: add L3 with display name, type, and
+ * link (all required for navigable rows; no plain-text type in that context).
  *
  * @param {{
  *   open: boolean;
@@ -46,11 +52,21 @@ export function AddL1Modal({
   const [navLink, setNavLink] = useState("");
 
   const showLevelSelect = parentL1 != null && parentL2 == null;
-  /** L3-only modal — display name, type, and link are all required */
   const isL3AddModal = parentL1 != null && parentL2 != null;
-  /** Type required for link rows (L3); optional for new L1 section and new L2 column */
+  const isUnderL1 = parentL1 != null;
+  /** Under a selected L1: type is always required for L2 column, L3 item, or L3-only add */
   const typeRequired =
-    isL3AddModal || (showLevelSelect && level === "item");
+    isL3AddModal ||
+    (showLevelSelect && (level === "column" || level === "item"));
+  const isPlainText = navType === NAV_TYPE_PLAIN_TEXT;
+  /** Add L3 under L2: type + link required; display name is always required */
+  const linkFieldVisible = isL3AddModal
+    ? true
+    : isUnderL1
+      ? typeRequired && isNavTypeWithLink(navType)
+      : navType !== NAV_TYPE_PLAIN_TEXT;
+  const linkRequired =
+    isL3AddModal || (isUnderL1 && linkFieldVisible);
   const modalTitle =
     title ??
     (parentL2 != null ? "Add link" : parentL1 == null ? "Add section" : "Add item");
@@ -59,9 +75,20 @@ export function AddL1Modal({
     if (!open) return;
     setDisplayName("");
     setLevel("");
-    setNavType("");
+    setNavType(parentL1 != null && parentL2 != null ? "link" : "");
     setNavLink("");
   }, [open, parentL1, parentL2]);
+
+  useEffect(() => {
+    if (navType === NAV_TYPE_PLAIN_TEXT) setNavLink("");
+  }, [navType]);
+
+  useEffect(() => {
+    if (showLevelSelect && level !== "column" && level !== "item") {
+      setNavType("");
+      setNavLink("");
+    }
+  }, [level, showLevelSelect]);
 
   useEffect(() => {
     if (!open) return;
@@ -86,20 +113,30 @@ export function AddL1Modal({
   const levelForSubmit = showLevelSelect ? level : "column";
   const needsLevel = showLevelSelect;
   const levelOk = !needsLevel || level === "column" || level === "item";
+  /** Do not show type/link until Column vs Item is chosen; avoids `typeRequired` false while a type is selected */
+  const typeBlockReady = !showLevelSelect || level === "column" || level === "item";
   const navTypeOk =
     !typeRequired ||
-    navType === "collection" ||
-    navType === "super-collection" ||
-    navType === "link";
-  const l3FieldsOk = !isL3AddModal || trimmedLink.length > 0;
-  const canSubmit = levelOk && trimmed.length > 0 && navTypeOk && l3FieldsOk;
+    (navType &&
+      (isL3AddModal ? VALID_L3_FROM_L2_TYPES : VALID_NAV_TYPES).includes(navType));
+  const linkOk = isL3AddModal
+    ? trimmedLink.length > 0
+    : isPlainText || !linkRequired || trimmedLink.length > 0;
+  /** L3 under L2: display name, type, and link are all required */
+  const l3AddAllFieldsComplete =
+    trimmed.length > 0 &&
+    Boolean(navType) &&
+    VALID_L3_FROM_L2_TYPES.includes(navType) &&
+    trimmedLink.length > 0;
+  const canSubmit = isL3AddModal
+    ? l3AddAllFieldsComplete
+    : levelOk && trimmed.length > 0 && typeBlockReady && navTypeOk && linkOk;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!canSubmit) return;
 
     if (parentL2 != null && parentL1 != null) {
-      if (!navTypeOk || trimmedLink.length === 0) return;
       const taken = siblingLabelsForAdd(tree, parentL1, parentL2, levelForSubmit, showLevelSelect);
       const finalLabel = uniqueAmong(trimmed, taken);
       onConfirm({
@@ -112,19 +149,29 @@ export function AddL1Modal({
       return;
     }
 
+    if (parentL1 == null) {
+      const taken = siblingLabelsForAdd(tree, parentL1, parentL2, levelForSubmit, showLevelSelect);
+      const finalLabel = uniqueAmong(trimmed, taken);
+      onConfirm({
+        parentL1: null,
+        displayName: finalLabel,
+        level: levelForSubmit,
+        ...(navType ? { navType } : {}),
+        ...(!isPlainText && trimmedLink ? { navLink: trimmedLink } : {}),
+      });
+      return;
+    }
+
     if (showLevelSelect && !levelOk) return;
     if (!navTypeOk) return;
     const taken = siblingLabelsForAdd(tree, parentL1, parentL2, levelForSubmit, showLevelSelect);
     const finalLabel = uniqueAmong(trimmed, taken);
-    const meta = {
-      displayName: finalLabel,
-      level: levelForSubmit,
-      navLink: trimmedLink,
-      ...(navType ? { navType } : {}),
-    };
     onConfirm({
       parentL1,
-      ...meta,
+      displayName: finalLabel,
+      level: levelForSubmit,
+      navType,
+      ...(isPlainText ? {} : { navLink: trimmedLink }),
     });
   };
 
@@ -155,7 +202,7 @@ export function AddL1Modal({
             </svg>
           </button>
         </div>
-        <form className="add-l1-modal__body" onSubmit={handleSubmit}>
+        <form className="add-l1-modal__body" onSubmit={handleSubmit} noValidate>
           {showLevelSelect ? (
             <div className="field-group">
               <label className="field-label" htmlFor="add-l1-level">
@@ -194,40 +241,47 @@ export function AddL1Modal({
               required
             />
           </div>
-          <div className="field-group">
-            <label className="field-label" htmlFor="add-l1-type">
-              Type{typeRequired ? <span className="field-label__req">*</span> : null}
-            </label>
-            <select
-              id="add-l1-type"
-              className="field-select"
-              value={navType}
-              onChange={(e) => setNavType(e.target.value)}
-              required={typeRequired}
-            >
-              <option value="" disabled>
-                Select type
-              </option>
-              <option value="collection">Collection</option>
-              <option value="super-collection">Super collection</option>
-              <option value="link">Link</option>
-            </select>
-          </div>
-          <div className="field-group">
-            <label className="field-label" htmlFor="add-l1-link">
-              Link{isL3AddModal ? <span className="field-label__req">*</span> : null}
-            </label>
-            <input
-              id="add-l1-link"
-              type="text"
-              className="field-input"
-              value={navLink}
-              onChange={(e) => setNavLink(e.target.value)}
-              placeholder="/cooking/…"
-              autoComplete="off"
-              required={isL3AddModal}
-            />
-          </div>
+          {typeBlockReady ? (
+            <>
+              <div className="field-group">
+                <label className="field-label" htmlFor="add-l1-type">
+                  Type{typeRequired ? <span className="field-label__req">*</span> : null}
+                </label>
+                <select
+                  id="add-l1-type"
+                  className="field-select"
+                  value={navType}
+                  onChange={(e) => setNavType(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select type
+                  </option>
+                  <option value="collection">Collection</option>
+                  <option value="super-collection">Super collection</option>
+                  <option value="link">Link</option>
+                  {!isL3AddModal ? (
+                    <option value={NAV_TYPE_PLAIN_TEXT}>Plain text</option>
+                  ) : null}
+                </select>
+              </div>
+              {linkFieldVisible ? (
+                <div className="field-group">
+                  <label className="field-label" htmlFor="add-l1-link">
+                    Link{linkRequired ? <span className="field-label__req">*</span> : null}
+                  </label>
+                  <input
+                    id="add-l1-link"
+                    type="text"
+                    className="field-input"
+                    value={navLink}
+                    onChange={(e) => setNavLink(e.target.value)}
+                    placeholder={isL3AddModal ? "https://…" : "/cooking/…"}
+                    autoComplete="off"
+                  />
+                </div>
+              ) : null}
+            </>
+          ) : null}
           <div className="add-l1-modal__footer">
             <button type="button" className="btn btn--secondary" onClick={onClose}>
               Cancel

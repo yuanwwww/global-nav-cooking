@@ -1,7 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-export default defineConfig({
-  base: "/global-nav-cooking/",
+export default defineConfig(({ mode }) => ({
+  base: mode === "production" ? "/global-nav-cooking/" : "/",
   plugins: [react()],
-});
+  server: {
+    open: true,
+  },
+}));
