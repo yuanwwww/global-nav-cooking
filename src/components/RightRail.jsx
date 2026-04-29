@@ -692,29 +692,56 @@ export function RightRail({
   onUpdateL3Detail = () => {},
   onOpenAddNavModal,
 }) {
-  if (selection == null) {
+  const isOpen = selection != null;
+
+  /** Esc closes the rail; effect is gated by isOpen so listener only attaches when rail is rendered. */
+  useEffect(() => {
+    if (!isOpen || typeof onCloseRail !== "function") return;
+    function onKey(e) {
+      if (e.key === "Escape") onCloseRail();
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen, onCloseRail]);
+
+  /** Body scroll lock — only takes effect at narrow viewports via media-query CSS */
+  useEffect(() => {
+    if (!isOpen) return;
+    document.body.classList.add("is-rail-modal-open");
+    return () => document.body.classList.remove("is-rail-modal-open");
+  }, [isOpen]);
+
+  if (!isOpen) {
     return null;
   }
 
   return (
-    <aside
-      className={`right-rail${railDraft ? " right-rail--add-draft" : ""}`}
-      id="right-rail"
-      aria-label="Navigation editor"
-    >
-      <TreeSelectionDetail
-        tree={tree}
-        selection={selection}
-        onCloseRail={onCloseRail}
-        railDraft={railDraft}
-        onDismissRailDraft={onDismissRailDraft}
-        onUpdateAddL2Draft={onUpdateAddL2Draft}
-        onUpdateAddL3Draft={onUpdateAddL3Draft}
-        onUpdateL1Detail={onUpdateL1Detail}
-        onUpdateL2Detail={onUpdateL2Detail}
-        onUpdateL3Detail={onUpdateL3Detail}
-        onOpenAddNavModal={onOpenAddNavModal}
+    <>
+      {/* Narrow-viewport modal backdrop; hidden via CSS on wide viewports */}
+      <div
+        className="right-rail-backdrop"
+        onClick={onCloseRail}
+        aria-hidden="true"
       />
-    </aside>
+      <aside
+        className={`right-rail${railDraft ? " right-rail--add-draft" : ""}`}
+        id="right-rail"
+        aria-label="Navigation editor"
+      >
+        <TreeSelectionDetail
+          tree={tree}
+          selection={selection}
+          onCloseRail={onCloseRail}
+          railDraft={railDraft}
+          onDismissRailDraft={onDismissRailDraft}
+          onUpdateAddL2Draft={onUpdateAddL2Draft}
+          onUpdateAddL3Draft={onUpdateAddL3Draft}
+          onUpdateL1Detail={onUpdateL1Detail}
+          onUpdateL2Detail={onUpdateL2Detail}
+          onUpdateL3Detail={onUpdateL3Detail}
+          onOpenAddNavModal={onOpenAddNavModal}
+        />
+      </aside>
+    </>
   );
 }

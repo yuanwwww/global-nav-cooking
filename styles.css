@@ -515,8 +515,10 @@ button {
 
 /* —— Option B: tree column capped; panel centered in this track; right rail grows —— */
 .app--layout-b .workspace__scroll {
-  flex: 0 1 var(--workspace-tree-column-b);
-  max-width: var(--workspace-tree-column-b);
+  /* Grow into the leftover horizontal space so the tree panel inside
+     (capped at 640px, centered) shifts based on viewport width while the
+     right rail stays pinned at 384px on the right. */
+  flex: 1 1 var(--workspace-tree-column-b);
   min-width: 0;
   border-right: none;
   display: flex;
@@ -537,10 +539,51 @@ button {
 }
 
 .app--layout-b .right-rail {
-  flex: 1 1 0%;
-  width: auto;
+  flex: 0 0 var(--right-rail-width);
+  width: var(--right-rail-width);
   min-width: min(var(--right-rail-min), 100%);
-  max-width: none;
+  max-width: var(--right-rail-width);
+}
+
+/* Narrow viewport: rail becomes a centered modal — full-viewport scrim, rounded
+   panel matching the AddL1Modal pattern. Click scrim, rail's X, or press Esc to close. */
+.right-rail-backdrop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .right-rail-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 18, 18, 0.45);
+    z-index: 379;
+    cursor: pointer;
+  }
+
+  .app--layout-b .right-rail {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    flex: 0 0 auto;
+    width: min(calc(100vw - 32px), 384px);
+    max-width: min(calc(100vw - 32px), 384px);
+    max-height: min(90vh, 720px);
+    z-index: 380;
+    background: var(--surface-raised);
+    border: 1px solid var(--stroke-secondary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-pop);
+    overflow: auto;
+  }
+
+  /* Body scroll lock only applies at narrow viewports where rail is modal */
+  body.is-rail-modal-open {
+    overflow: hidden;
+  }
 }
 
 /* Option B — right rail content uses full width; only horizontal inset (margins) */
