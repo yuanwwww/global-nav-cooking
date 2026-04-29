@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 /** Opens in a new tab; set `VITE_PREVIEW_URL` in `.env` to override the default. */
 const DEFAULT_PREVIEW_URL = "https://cooking.nytimes.com";
 
-export function Topbar({ dirty, layoutVariant, onLayoutVariantChange }) {
+export function Topbar({ dirty }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const splitRef = useRef(null);
   const previewUrl = import.meta.env.VITE_PREVIEW_URL || DEFAULT_PREVIEW_URL;
@@ -49,30 +49,6 @@ export function Topbar({ dirty, layoutVariant, onLayoutVariantChange }) {
       </div>
 
       <div className="topbar__actions">
-        <div
-          className="layout-variant-switch layout-variant-switch--compact"
-          role="group"
-          aria-label="Workspace layout"
-        >
-          <div className="layout-variant-switch__buttons">
-            <button
-              type="button"
-              className={`layout-variant-switch__btn${layoutVariant === "a" ? " is-active" : ""}`}
-              aria-pressed={layoutVariant === "a"}
-              onClick={() => onLayoutVariantChange("a")}
-            >
-              A
-            </button>
-            <button
-              type="button"
-              className={`layout-variant-switch__btn${layoutVariant === "b" ? " is-active" : ""}`}
-              aria-pressed={layoutVariant === "b"}
-              onClick={() => onLayoutVariantChange("b")}
-            >
-              B
-            </button>
-          </div>
-        </div>
         <span
           id="save-status"
           className={`topbar__saved${dirty ? " topbar__saved--dirty" : ""}`}

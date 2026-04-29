@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { l3Label } from "../data/treeMutations.js";
 import { l1HasAtLeastOneLink, l2HasAtLeastOneLink } from "../navValidation.js";
 import { NAV_TYPE_PLAIN_TEXT, isNavTypeWithLink } from "../data/navTypes.js";
-import { IconEdit, IconErrorWarning, IconTrash } from "./RailIcons.jsx";
+import { IconErrorWarning } from "./RailIcons.jsx";
 
 function getBlock(tree, l1) {
   return tree.find((b) => b.label === l1);
@@ -51,73 +51,6 @@ function RailHeaderDetail({ title, titleSize, showClose, onClose }) {
 
 const DRAFT_NAME_DEBOUNCE_MS = 320;
 const DETAIL_DEBOUNCE_MS = 320;
-
-const L1ListDragDots = () => (
-  <span className="l1-list__drag" aria-hidden="true" draggable={false}>
-    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-      <circle cx="5" cy="5" r="1.5" fill="currentColor" />
-      <circle cx="10" cy="5" r="1.5" fill="currentColor" />
-      <circle cx="15" cy="5" r="1.5" fill="currentColor" />
-      <circle cx="5" cy="10" r="1.5" fill="currentColor" />
-      <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-      <circle cx="15" cy="10" r="1.5" fill="currentColor" />
-      <circle cx="5" cy="15" r="1.5" fill="currentColor" />
-      <circle cx="10" cy="15" r="1.5" fill="currentColor" />
-      <circle cx="15" cy="15" r="1.5" fill="currentColor" />
-    </svg>
-  </span>
-);
-
-/** Layout A rest state (Figma 522-19003): full L1 list when no tree selection */
-function RailL1RestList({ tree, onPickL1, onAddItem }) {
-  const l1Labels = tree.map((b) => b.label);
-  return (
-    <>
-      <div className="right-rail__header">
-        <div className="right-rail__view right-rail__view--list is-active">
-          <h2 className="right-rail__title">All L1s</h2>
-        </div>
-      </div>
-      <div className="right-rail__body">
-        <div className="rail-panel rail-panel--list is-active">
-          <div className="rail-panel__toolbar">
-            <button type="button" className="rail-add-btn" id="btn-add-new-l1" onClick={() => onAddItem?.()}>
-              Add item
-            </button>
-          </div>
-          <ul className="l1-list" id="l1-list">
-            {l1Labels.map((title) => (
-              <li
-                key={title}
-                className="l1-list__item js-l1-row"
-                data-tree-label={title}
-              >
-                <L1ListDragDots />
-                <div className="l1-list__main">
-                  <button
-                    type="button"
-                    className="js-l1-name l1-list__name-btn"
-                    onClick={() => onPickL1(title)}
-                  >
-                    {title}
-                  </button>
-                </div>
-                <div className="l1-list__actions">
-                  <button type="button" className="l1-list__icon-btn js-l1-edit" aria-label={`Edit ${title}`}>
-                    <IconEdit className="l1-list__icon" />
-                  </button>
-                  <button type="button" className="l1-list__icon-btn js-l1-delete" aria-label={`Delete ${title}`}>
-                    <IconTrash className="l1-list__icon" />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </>
-  );
-}
 
 function RailAddL2Form({ parentL1, initialDisplayName, onDraftUpdate, onDismissRailDraft, headerShowClose }) {
   const [displayName, setDisplayName] = useState(initialDisplayName);
@@ -312,118 +245,11 @@ function RailAddL3Form({ parentL1, parentL2, initialDisplayName, onDraftUpdate, 
   );
 }
 
-/** Layout A: L1 shows L2 list only; L2 shows L3 list. L2 rows with `hideL2Header` list L3 links only (no columns). */
-function RailLayoutANestedL1({ block, l1, onSelect }) {
-  if (!block) return null;
-  const onlyFlatL3 =
-    block.l2s.length > 0 && block.l2s.every((l2) => l2.hideL2Header);
-  if (onlyFlatL3) {
-    const rows = block.l2s.flatMap((l2) =>
-      (l2.l3s ?? []).map((l3) => {
-        const lab = l3Label(l3);
-        return (
-          <div key={`${l2.label}::${lab}`} className="detail-l2-row">
-            <button
-              type="button"
-              className="detail-l2-row__label"
-              onClick={() => onSelect?.({ kind: "l3", l1, l2: l2.label, l3: lab })}
-            >
-              {lab}
-            </button>
-          </div>
-        );
-      })
-    );
-    return (
-      <div className="detail-layout-a__outline">
-        <p className="detail-layout-a__outline-caption">Links (L3)</p>
-        {rows.length === 0 ? (
-          <p className="detail-layout-a__empty">No links yet.</p>
-        ) : (
-          <div className="detail-l2-tiles">{rows}</div>
-        )}
-      </div>
-    );
-  }
-  return (
-    <div className="detail-layout-a__outline">
-      <p className="detail-layout-a__outline-caption">Sections (L2)</p>
-      {block.l2s.length === 0 ? (
-        <p className="detail-layout-a__empty">No L2 sections yet. Use Add L2.</p>
-      ) : (
-        <div className="detail-l2-tiles">
-          {block.l2s.flatMap((l2) =>
-            l2.hideL2Header
-              ? (l2.l3s ?? []).map((l3) => {
-                  const lab = l3Label(l3);
-                  return (
-                    <div key={`${l2.label}::${lab}`} className="detail-l2-row">
-                      <button
-                        type="button"
-                        className="detail-l2-row__label"
-                        onClick={() => onSelect?.({ kind: "l3", l1, l2: l2.label, l3: lab })}
-                      >
-                        {lab}
-                      </button>
-                    </div>
-                  );
-                })
-              : [
-                  <div key={l2.label} className="detail-l2-row">
-                    <button
-                      type="button"
-                      className="detail-l2-row__label"
-                      onClick={() => onSelect?.({ kind: "l2", l1, l2: l2.label })}
-                    >
-                      {l2.label}
-                    </button>
-                  </div>,
-                ]
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function RailLayoutANestedL2({ l2, l1, l2Label, onSelect }) {
-  if (!l2) return null;
-  return (
-    <div className="detail-layout-a__outline">
-      <p className="detail-layout-a__outline-caption">Links (L3)</p>
-      {l2.l3s.length === 0 ? (
-        <p className="detail-layout-a__empty">No L3 links yet. Use Add.</p>
-      ) : (
-        <ul className="detail-l3-list">
-          {l2.l3s.map((l3) => {
-            const lab = l3Label(l3);
-            return (
-              <li key={lab}>
-                <button
-                  type="button"
-                  className="detail-l3-row detail-l3-row--rail-only"
-                  onClick={() => onSelect?.({ kind: "l3", l1, l2: l2Label, l3: lab })}
-                >
-                  <span className="detail-l3-row__meta">
-                    <span className="detail-l3-row__label">{lab}</span>
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 function RailL1Column({
   block,
   l1,
   l1Invalid,
-  layoutVariant,
   onUpdate,
-  onSelect,
   onOpenAddNavModal,
   showClose,
   onClose,
@@ -482,7 +308,7 @@ function RailL1Column({
                 className="btn btn--secondary btn--signal-outline"
                 onClick={() => onOpenAddNavModal?.(l1)}
               >
-                Add link
+                Add
               </button>
             </div>
             <form className="detail-stack" key={formKey} onSubmit={(e) => e.preventDefault()}>
@@ -532,7 +358,6 @@ function RailL1Column({
                 </div>
               ) : null}
             </form>
-            {layoutVariant === "a" ? <RailLayoutANestedL1 block={block} l1={l1} onSelect={onSelect} /> : null}
           </div>
         </div>
       </div>
@@ -545,9 +370,7 @@ function RailL2Column({
   l2,
   l2Node,
   l2Invalid,
-  layoutVariant,
   onUpdate,
-  onSelect,
   onOpenAddNavModal,
   formKey,
   showClose,
@@ -632,9 +455,6 @@ function RailL2Column({
                   </div>
                 ) : null}
               </form>
-              {layoutVariant === "a" ? (
-                <RailLayoutANestedL2 l2={l2Node} l1={l1} l2Label={l2} onSelect={onSelect} />
-              ) : null}
             </div>
           )}
         </div>
@@ -749,13 +569,9 @@ function RailL3Column({ l1, l2, l3, l3Entry, l3Exists, onUpdate, formKey, showCl
 function TreeSelectionDetail({
   tree,
   selection,
-  layoutVariant,
-  onSelect,
   onCloseRail,
   railDraft,
   onDismissRailDraft,
-  onRequestAddL2,
-  onRequestAddL3,
   onUpdateAddL2Draft,
   onUpdateAddL3Draft,
   onUpdateL1Detail,
@@ -764,8 +580,8 @@ function TreeSelectionDetail({
   onOpenAddNavModal,
 }) {
   const block = selection ? getBlock(tree, selection.l1) : null;
-  const showCloseLayoutB = layoutVariant === "b" && typeof onCloseRail === "function";
-  const headerShowClose = showCloseLayoutB || !!railDraft;
+  const showClose = typeof onCloseRail === "function";
+  const headerShowClose = showClose || !!railDraft;
 
   if (
     railDraft?.kind === "add-l2" &&
@@ -816,11 +632,9 @@ function TreeSelectionDetail({
         block={block}
         l1={selection.l1}
         l1Invalid={l1Invalid}
-        layoutVariant={layoutVariant}
         onUpdate={onUpdateL1Detail}
-        onSelect={onSelect}
         onOpenAddNavModal={onOpenAddNavModal}
-        showClose={showCloseLayoutB}
+        showClose={showClose}
         onClose={onCloseRail}
       />
     );
@@ -837,11 +651,9 @@ function TreeSelectionDetail({
         l2={selection.l2}
         l2Node={l2}
         l2Invalid={l2Invalid}
-        layoutVariant={layoutVariant}
         onUpdate={onUpdateL2Detail}
-        onSelect={onSelect}
         onOpenAddNavModal={onOpenAddNavModal}
-        showClose={showCloseLayoutB}
+        showClose={showClose}
         onClose={onCloseRail}
       />
     );
@@ -861,7 +673,7 @@ function TreeSelectionDetail({
       l3Entry={l3Entry}
       l3Exists={l3Exists}
       onUpdate={onUpdateL3Detail}
-      showClose={showCloseLayoutB}
+      showClose={showClose}
       onClose={onCloseRail}
     />
   );
@@ -870,13 +682,9 @@ function TreeSelectionDetail({
 export function RightRail({
   tree,
   selection,
-  layoutVariant = "a",
-  onSelect,
   onCloseRail,
   railDraft,
   onDismissRailDraft,
-  onRequestAddL2,
-  onRequestAddL3,
   onUpdateAddL2Draft,
   onUpdateAddL3Draft,
   onUpdateL1Detail = () => {},
@@ -884,20 +692,8 @@ export function RightRail({
   onUpdateL3Detail = () => {},
   onOpenAddNavModal,
 }) {
-  if (layoutVariant === "b" && selection == null) {
+  if (selection == null) {
     return null;
-  }
-
-  if (layoutVariant === "a" && selection == null) {
-    return (
-      <aside className="right-rail" id="right-rail" aria-label="Navigation editor">
-        <RailL1RestList
-          tree={tree}
-          onPickL1={(l1) => onSelect?.({ kind: "l1", l1 })}
-          onAddItem={() => onOpenAddNavModal?.(null)}
-        />
-      </aside>
-    );
   }
 
   return (
@@ -909,13 +705,9 @@ export function RightRail({
       <TreeSelectionDetail
         tree={tree}
         selection={selection}
-        layoutVariant={layoutVariant}
-        onSelect={onSelect}
         onCloseRail={onCloseRail}
         railDraft={railDraft}
         onDismissRailDraft={onDismissRailDraft}
-        onRequestAddL2={onRequestAddL2}
-        onRequestAddL3={onRequestAddL3}
         onUpdateAddL2Draft={onUpdateAddL2Draft}
         onUpdateAddL3Draft={onUpdateAddL3Draft}
         onUpdateL1Detail={onUpdateL1Detail}

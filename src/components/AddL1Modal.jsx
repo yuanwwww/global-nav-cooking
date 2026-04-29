@@ -54,22 +54,29 @@ export function AddL1Modal({
   const showLevelSelect = parentL1 != null && parentL2 == null;
   const isL3AddModal = parentL1 != null && parentL2 != null;
   const isUnderL1 = parentL1 != null;
+  /** L3 added under an L1 (via level select) mirrors L3-under-L2: type + link both required, no plain-text option */
+  const isAddingL3UnderL1 = showLevelSelect && level === "item";
+  const isL3Add = isL3AddModal || isAddingL3UnderL1;
   /** Under a selected L1: type is always required for L2 column, L3 item, or L3-only add */
   const typeRequired =
     isL3AddModal ||
     (showLevelSelect && (level === "column" || level === "item"));
   const isPlainText = navType === NAV_TYPE_PLAIN_TEXT;
-  /** Add L3 under L2: type + link required; display name is always required */
-  const linkFieldVisible = isL3AddModal
+  /** Add L3 (under L1 or L2): all 4 fields visible; type + link required; display name is always required */
+  const linkFieldVisible = isL3Add
     ? true
     : isUnderL1
       ? typeRequired && isNavTypeWithLink(navType)
       : navType !== NAV_TYPE_PLAIN_TEXT;
   const linkRequired =
-    isL3AddModal || (isUnderL1 && linkFieldVisible);
+    isL3Add || (isUnderL1 && linkFieldVisible);
   const modalTitle =
     title ??
-    (parentL2 != null ? "Add link" : parentL1 == null ? "Add section" : "Add item");
+    (parentL2 != null
+      ? "Add link"
+      : parentL1 == null
+        ? "Add section"
+        : `${parentL1} / Add`);
 
   useEffect(() => {
     if (!open) return;
@@ -118,11 +125,11 @@ export function AddL1Modal({
   const navTypeOk =
     !typeRequired ||
     (navType &&
-      (isL3AddModal ? VALID_L3_FROM_L2_TYPES : VALID_NAV_TYPES).includes(navType));
-  const linkOk = isL3AddModal
+      (isL3Add ? VALID_L3_FROM_L2_TYPES : VALID_NAV_TYPES).includes(navType));
+  const linkOk = isL3Add
     ? trimmedLink.length > 0
     : isPlainText || !linkRequired || trimmedLink.length > 0;
-  /** L3 under L2: display name, type, and link are all required */
+  /** L3 add (under L1 or L2): display name, type, and link are all required */
   const l3AddAllFieldsComplete =
     trimmed.length > 0 &&
     Boolean(navType) &&
@@ -130,7 +137,9 @@ export function AddL1Modal({
     trimmedLink.length > 0;
   const canSubmit = isL3AddModal
     ? l3AddAllFieldsComplete
-    : levelOk && trimmed.length > 0 && typeBlockReady && navTypeOk && linkOk;
+    : isAddingL3UnderL1
+      ? levelOk && l3AddAllFieldsComplete
+      : levelOk && trimmed.length > 0 && typeBlockReady && navTypeOk && linkOk;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -259,7 +268,7 @@ export function AddL1Modal({
                   <option value="collection">Collection</option>
                   <option value="super-collection">Super collection</option>
                   <option value="link">Link</option>
-                  {!isL3AddModal ? (
+                  {!isL3Add ? (
                     <option value={NAV_TYPE_PLAIN_TEXT}>Plain text</option>
                   ) : null}
                 </select>
@@ -275,7 +284,7 @@ export function AddL1Modal({
                     className="field-input"
                     value={navLink}
                     onChange={(e) => setNavLink(e.target.value)}
-                    placeholder={isL3AddModal ? "https://…" : "/cooking/…"}
+                    placeholder={isL3Add ? "https://…" : "/cooking/…"}
                     autoComplete="off"
                   />
                 </div>
