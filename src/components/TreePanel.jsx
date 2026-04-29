@@ -57,7 +57,6 @@ export function TreePanel({
   onL1Reorder,
   onL2Reorder,
   onL3Reorder,
-  layoutVariant = "a",
   expandL2Target = null,
   onExpandL2Consumed,
   onAddSection,
@@ -95,10 +94,6 @@ export function TreePanel({
   const l2DragPayloadStrRef = useRef(null);
   const l2WindowDragOverRef = useRef(null);
   const l2CollapseTimeoutRef = useRef(null);
-
-  useEffect(() => {
-    if (layoutVariant !== "b") setL1SortMode(false);
-  }, [layoutVariant]);
 
   useEffect(() => {
     if (!expandL2Target) return;
@@ -385,53 +380,51 @@ export function TreePanel({
 
   return (
     <div className="tree-panel" id="tree-panel">
-      {layoutVariant === "b" ? (
-        <div className="tree-panel__toolbar" role="toolbar" aria-label="Top-level section actions">
-          {l1SortMode ? (
-            <div className="tree-panel__sort-toolbar">
-              <div className="tree-panel__sort-cta-row">
-                <button
-                  type="button"
-                  className="btn btn--tree-sort-cancel btn--tree-toolbar"
-                  onClick={cancelL1Sort}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn--secondary btn--signal-outline btn--tree-toolbar"
-                  onClick={commitL1Sort}
-                >
-                  Confirm changes
-                </button>
-              </div>
-              <p className="tree-panel__sort-hint">
-                Click Confirm changes to save changes made to L1
-              </p>
+      <div className="tree-panel__toolbar" role="toolbar" aria-label="Top-level section actions">
+        {l1SortMode ? (
+          <div className="tree-panel__sort-toolbar">
+            <div className="tree-panel__sort-cta-row">
+              <button
+                type="button"
+                className="btn btn--tree-sort-cancel btn--tree-toolbar"
+                onClick={cancelL1Sort}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn--secondary btn--signal-outline btn--tree-toolbar"
+                onClick={commitL1Sort}
+              >
+                Confirm changes
+              </button>
             </div>
-          ) : (
-            <>
-              <button
-                type="button"
-                className="btn btn--secondary btn--tree-toolbar"
-                onClick={beginL1Sort}
-              >
-                Reorder Sections
-              </button>
-              <button
-                type="button"
-                className="btn btn--secondary btn--tree-toolbar"
-                onClick={() => onAddSection?.()}
-              >
-                <AddL1Icon />
-                Add Section
-              </button>
-            </>
-          )}
-        </div>
-      ) : null}
+            <p className="tree-panel__sort-hint">
+              Click Confirm changes to save changes made to L1
+            </p>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="btn btn--secondary btn--tree-toolbar"
+              onClick={beginL1Sort}
+            >
+              Reorder Sections
+            </button>
+            <button
+              type="button"
+              className="btn btn--secondary btn--tree-toolbar"
+              onClick={() => onAddSection?.()}
+            >
+              <AddL1Icon />
+              Add Section
+            </button>
+          </>
+        )}
+      </div>
 
-      {layoutVariant === "b" && l1SortMode ? (
+      {l1SortMode ? (
         <div
           className="tree-panel__l1-sort-board"
           role="list"

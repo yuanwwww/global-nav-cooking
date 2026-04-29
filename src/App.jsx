@@ -28,11 +28,9 @@ import { AddL1Modal } from "./components/AddL1Modal.jsx";
 import { ConfirmDeleteModal } from "./components/ConfirmDeleteModal.jsx";
 
 export default function App() {
-  /** null = no tree focus; layout B hides the right rail until something is selected */
+  /** null = no tree focus; right rail stays hidden until something is selected */
   const [selection, setSelection] = useState(null);
   const [dirty, setDirty] = useState(false);
-  /** Figma: alt_a = wider split rail; alt_b = tree column + rest-state cards (default) */
-  const [layoutVariant, setLayoutVariant] = useState("b");
   /** Working copy; L1 order updated after Reorder Sections → Confirm changes */
   const [navTree, setNavTree] = useState(() => [...NAV_TREE]);
   /** Right-rail add flow: replaces detail with NEW L2 / NEW L3 form */
@@ -414,16 +412,12 @@ export default function App() {
   );
 
   return (
-    <div className={`app app--layout-${layoutVariant}`}>
+    <div className="app app--layout-b">
       <Sidebar />
       <div className="app__main">
-        <Topbar
-          dirty={dirty}
-          layoutVariant={layoutVariant}
-          onLayoutVariantChange={setLayoutVariant}
-        />
+        <Topbar dirty={dirty} />
         <div
-          className={`workspace${layoutVariant === "b" && selection == null ? " workspace--b-no-rail" : ""}`}
+          className={`workspace${selection == null ? " workspace--b-no-rail" : ""}`}
         >
           <div className="workspace__scroll" id="workspace-scroll">
             <TreePanel
@@ -433,7 +427,6 @@ export default function App() {
               onL1Reorder={onL1Reorder}
               onL2Reorder={onL2Reorder}
               onL3Reorder={onL3Reorder}
-              layoutVariant={layoutVariant}
               expandL2Target={expandL2Target}
               onExpandL2Consumed={onExpandL2Consumed}
               onAddSection={() => openAddNavModal(null)}
@@ -445,7 +438,6 @@ export default function App() {
           <RightRail
             tree={navTree}
             selection={selection}
-            layoutVariant={layoutVariant}
             onSelect={onSelect}
             onCloseRail={onCloseRail}
             railDraft={railDraft}

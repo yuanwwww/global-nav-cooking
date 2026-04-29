@@ -42,9 +42,6 @@
   --right-rail-width: 384px;
   /* Figma Frame 628553 — tree column */
   --workspace-tree-column-b: 720px;
-  /* Figma alt_a — equal split 605 + 605 (+ sidebar 70 = 1280) */
-  --workspace-tree-column-a: 605px;
-  --right-rail-width-a: 605px;
   --topbar-height: 48px;
 }
 
@@ -231,78 +228,6 @@ button {
   align-items: center;
   justify-content: flex-start;
   min-width: 0;
-}
-
-.layout-variant-switch {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  flex-shrink: 0;
-}
-
-.layout-variant-switch__label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--content-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.layout-variant-switch__buttons {
-  display: inline-flex;
-  border: 1px solid var(--stroke-primary);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--background-secondary);
-}
-
-.layout-variant-switch__btn {
-  margin: 0;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: inherit;
-  color: var(--content-secondary);
-  background: transparent;
-  border: none;
-  border-right: 1px solid var(--stroke-secondary);
-  cursor: pointer;
-  line-height: 1.2;
-}
-
-.layout-variant-switch__btn:last-child {
-  border-right: none;
-}
-
-.layout-variant-switch__btn:hover {
-  color: var(--content-primary);
-  background: var(--surface-muted);
-}
-
-.layout-variant-switch__btn.is-active {
-  color: var(--content-inverse);
-  background: var(--colors-primary);
-}
-
-.layout-variant-switch__btn.is-active:hover {
-  background: var(--colors-primary-hover);
-  color: var(--content-inverse);
-}
-
-.layout-variant-switch__btn:focus-visible {
-  outline: 2px solid var(--utility-focus);
-  outline-offset: 2px;
-  z-index: 1;
-}
-
-.layout-variant-switch--compact .layout-variant-switch__btn {
-  padding: 4px 8px;
-  font-size: 11px;
-  min-width: 28px;
-}
-
-.layout-variant-switch--compact {
-  margin-right: var(--space-sm);
 }
 
 .topbar__actions {
@@ -633,93 +558,10 @@ button {
   width: 100%;
 }
 
-.app--layout-b .rail-panel.rail-panel--list.is-active {
-  width: 100%;
-  max-width: none;
-}
-
-.app--layout-b .rail-panel__toolbar {
-  width: 100%;
-}
-
-.app--layout-b .l1-list {
-  width: 100%;
-}
-
-.app--layout-b .l1-list__item {
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-}
-
-/* —— Figma alt_a: 605px tree + 605px rail; 400px tree card centered —— */
-.app--layout-a {
-  --right-rail-width: var(--right-rail-width-a);
-}
-
-.app--layout-a .workspace__scroll {
-  flex: 0 0 var(--workspace-tree-column-a);
-  width: var(--workspace-tree-column-a);
-  max-width: var(--workspace-tree-column-a);
-  /* Tree column is not a framed “card”; flush on #f8f8f8 */
-  border-right: none;
-}
-
-/* Figma alt_a tree IA — shared with alt_b so both modes use the same nav tree presentation */
-.app--layout-a .tree-block + .tree-block,
 .app--layout-b .tree-block + .tree-block {
   margin-top: var(--space-xl);
-  padding-top: var(--space-xl);
+  padding-top: var(--space-sm);
   border-top: 1px solid var(--stroke-secondary);
-}
-
-/* Frame 628553 — layout A: tree right-aligned in 605px track */
-.app--layout-a .tree-panel {
-  margin-left: auto;
-  margin-right: 0;
-  gap: var(--space-sm);
-}
-
-/* Layout A — tree flush on Background/Secondary (no white L1 cards) */
-.app--layout-a .tree-block {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.app--layout-a .tree-l1 {
-  background: transparent;
-  border-bottom: 1px solid var(--stroke-secondary);
-}
-
-.app--layout-a .tree-l2 {
-  background: transparent;
-}
-
-.app--layout-a .tree-block > .tree-l2 + .tree-l2 {
-  border-top: 1px solid var(--stroke-secondary);
-}
-
-.app--layout-a .accordion-header {
-  background: transparent;
-}
-
-.app--layout-a .accordion-header:hover {
-  background: rgba(18, 18, 18, 0.04);
-}
-
-.app--layout-a .accordion-body {
-  background: transparent;
-  border-top-color: var(--stroke-secondary);
-}
-
-.app--layout-a .tree-l3 {
-  background: transparent;
-}
-
-.app--layout-a .tree-l3:hover {
-  background: rgba(18, 18, 18, 0.04);
 }
 
 /* Layout B — Figma 650:44409 rest state: white L1 cards, stroke primary, 8px inset */
@@ -923,7 +765,6 @@ button {
 
 /* React tree L3: no link-out arrow; spacer keeps label aligned with prior 32px icon column */
 
-.app--layout-a .tree-overflow,
 .app--layout-b .tree-overflow {
   width: 16px;
   height: 16px;
@@ -935,11 +776,11 @@ button {
 .tree-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   max-width: 400px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 24px 40px;
+  padding: 8px 24px 40px;
   box-sizing: border-box;
 }
 
@@ -1810,114 +1651,6 @@ button.tree-l2__title .tree-l2__title-text {
   background: var(--surface-muted);
 }
 
-.l1-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.l1-list__item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 68px;
-  padding: 0 12px;
-  border: 1px solid var(--stroke-secondary);
-  border-radius: var(--radius-sm);
-  margin-bottom: 16px;
-  background: var(--background-primary);
-  box-sizing: border-box;
-}
-
-.l1-list__item:hover {
-  border-color: var(--utility-focus);
-}
-
-.l1-list__item.is-active {
-  border-color: var(--signal-selected);
-  box-shadow: 0 0 0 1px var(--signal-selected);
-}
-
-.l1-list__drag {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border: none;
-  padding: 0;
-  background: transparent;
-  color: var(--content-secondary);
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-}
-
-.l1-list__drag:active {
-  cursor: grabbing;
-}
-
-.l1-list__drag svg {
-  pointer-events: none;
-}
-
-.l1-list__main {
-  flex: 1;
-  min-width: 0;
-}
-
-.l1-list__name-btn {
-  border: none;
-  background: none;
-  padding: 0;
-  font: inherit;
-  text-align: left;
-  width: 100%;
-  cursor: pointer;
-}
-
-.js-l1-name {
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 18px;
-  color: var(--content-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
-
-.l1-list__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  flex-shrink: 0;
-}
-
-.l1-list__icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--signal-accent);
-  cursor: pointer;
-}
-
-.l1-list__icon-btn:hover {
-  background: rgba(43, 97, 170, 0.08);
-  color: var(--signal-accent-hover);
-}
-
-.l1-list__icon {
-  display: block;
-  flex-shrink: 0;
-}
-
 /* Ink: Signal/Accent text on white (Figma L1 detail “Add item”) */
 .rail-add-link {
   display: inline-block;
@@ -2020,45 +1753,6 @@ button.tree-l2__title .tree-l2__title-text {
   margin-bottom: 16px;
 }
 
-.detail-l2-tiles {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 0;
-}
-
-.detail-l2-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 68px;
-  padding: 0 12px;
-  border: 1px solid var(--stroke-secondary);
-  border-radius: var(--radius-sm);
-  background: var(--background-primary);
-}
-
-.detail-l2-row:hover {
-  border-color: var(--utility-focus);
-}
-
-.detail-l2-row__label {
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 18px;
-  flex: 1;
-  min-width: 0;
-}
-
-button.detail-l2-row__label {
-  border: none;
-  background: transparent;
-  padding: 0;
-  text-align: left;
-  color: inherit;
-}
-
 .detail-l3-section {
   margin-top: var(--space-lg);
   padding-top: var(--space-md);
@@ -2099,123 +1793,6 @@ button.detail-l2-row__label {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.detail-l3-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 68px;
-  padding: 0 12px;
-  border: 1px solid var(--stroke-secondary);
-  border-radius: var(--radius-sm);
-  margin-bottom: 16px;
-  background: var(--background-primary);
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.detail-l3-row:hover {
-  border-color: var(--utility-focus);
-}
-
-.detail-l3-row__drag {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border: none;
-  padding: 0;
-  background: transparent;
-  cursor: grab;
-  color: var(--content-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-}
-
-.detail-l3-row__drag:active {
-  cursor: grabbing;
-}
-
-.detail-l3-row__drag svg {
-  pointer-events: none;
-}
-
-.detail-l3-row__meta {
-  flex: 1;
-  min-width: 0;
-}
-
-.detail-l3-row__label {
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 18px;
-}
-
-.detail-l3-row__type {
-  font-size: 11px;
-  color: var(--content-secondary);
-  text-transform: uppercase;
-}
-
-.detail-l3-row__delete {
-  border: none;
-  background: transparent;
-  color: #b00020;
-  font-size: 12px;
-  font-weight: 600;
-  padding: var(--space-xs);
-}
-
-.sortable-list.is-sortable-dragging .detail-l3-row:not(.is-dragging) {
-  opacity: 0.85;
-}
-
-.detail-l3-row.is-dragging {
-  opacity: 0.5;
-  box-shadow: var(--shadow-pop);
-}
-
-/* Layout A — L1 outline lists L2 only; L2 outline lists L3. Layout B omits in JSX */
-.detail-layout-a__outline {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  margin-top: var(--space-lg);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--stroke-secondary);
-}
-
-.detail-layout-a__outline-caption {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--content-secondary);
-}
-
-.detail-layout-a__empty {
-  margin: 0;
-  font-size: 14px;
-  line-height: 18px;
-  color: var(--content-secondary);
-}
-
-.detail-l3-row--rail-only {
-  width: 100%;
-  text-align: left;
-  font: inherit;
-  cursor: pointer;
-}
-
-.detail-l3-row--rail-only:last-child {
-  margin-bottom: 0;
-}
-
-.l1-list__item.is-sortable-dragging {
-  opacity: 0.6;
 }
 
 .popover {
